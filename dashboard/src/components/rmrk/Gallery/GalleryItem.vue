@@ -1,5 +1,29 @@
 <template>
   <div class="wrapper">
+
+
+    <section class="hero is-white is-halfheight">
+      <div class="hero-body">
+        <div class="image512px">
+          <p class="title">
+            name name 
+          </p>
+          <!-- <p class="subtitle">
+            Half height subtitle
+          </p> -->
+          <div class="image is-1by1">
+            <b-image
+                v-if="!isLoading && imageVisible"
+                :src="nft.image || require('@/assets/kodadot_logo_v1_transparent_400px.png')"
+                :src-fallback="require('@/assets/kodadot_logo_v1_transparent_400px.png')"
+                alt="NFT minted image"
+                ratio="1by1"
+              ></b-image>
+            <b-skeleton height="524px" size="is-large" :active="isLoading"></b-skeleton>
+          </div>
+        </div>
+      </div>
+    </section>
     <div class="tile is-ancestor">
       <div class="tile is-6 is-vertical is-parent">
         <div class="tile is-child box">
@@ -198,5 +222,8 @@ export default class GalleryItem extends Vue {
 
 .withPicture {
   margin: 0.75em 0;
+}
+.image512px {
+  width: 512px;
 }
 </style>
