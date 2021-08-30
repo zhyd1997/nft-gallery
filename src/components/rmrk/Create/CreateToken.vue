@@ -17,9 +17,7 @@
               :value="option"
               :key="option.id"
             >
-              {{ option.name }} {{ option.id }} {{ option.alreadyMinted }}/{{
-                option.max || Infinity
-              }}
+              {{ option.id }} ({{ option.alreadyMinted }})
             </option>
           </b-select>
           <Tooltip
@@ -34,6 +32,7 @@
         {{ selectedCollection.max || Infinity }}
       </h6>
       <CreateItem
+        v-if="selectedCollection"
         v-bind.sync="nft"
       />
       <b-field>
@@ -104,7 +103,7 @@ import PasswordInput from '@/components/shared/PasswordInput.vue';
 import NFTUtils from '@/components/bsx/NftUtils'
 import RmrkVersionMixin from '@/utils/mixins/rmrkVersionMixin';
 import { supportTx, MaybeFile, calculateCost, offsetTx } from '@/utils/support';
-import collectionForMint from '@/queries/collectionForMint.graphql';
+import collectionForMint from '@/queries/bsx/collectionForMint.graphql';
 import TransactionMixin from '@/utils/mixins/txMixin';
 import ChainMixin from '@/utils/mixins/chainMixin';
 import shouldUpdate from '@/utils/shouldUpdate';
@@ -123,11 +122,10 @@ interface NFTAndMeta extends NFT {
 
 type MintedCollection = {
   id: string;
-  name: string;
+  // name: string;
   alreadyMinted: number;
-  max: number;
   metadata: string;
-  symbol: string;
+  // symbol: string;
 };
 
 @Component({
@@ -181,6 +179,7 @@ export default class CreateToken extends Mixins(
   }
 
   public async fetchCollections() {
+    console.log('fetchCollections')
     const collections = await this.$apollo.query({
       query: collectionForMint,
       variables: {
@@ -198,9 +197,6 @@ export default class CreateToken extends Mixins(
         ...ce,
         alreadyMinted: ce.nfts?.totalCount
       }))
-      .filter(
-        (ce: MintedCollection) => (ce.max || Infinity) - ce.alreadyMinted > 0
-      );
   }
 
   get disabled() {
@@ -244,9 +240,9 @@ export default class CreateToken extends Mixins(
   }
 
   protected async submit() {
-    // if (!this.selectedCollection) {
-    //   throw ReferenceError('[MINT] Unable to mint without collection');
-    // }
+    if (!this.selectedCollection) {
+      throw ReferenceError('[MINT] Unable to mint without collection');
+    }
 
     this.isLoading = true;
     this.status = 'loader.ipfs';
@@ -254,9 +250,10 @@ export default class CreateToken extends Mixins(
 
     try {
       const metadata = await this.constructMeta();
+      // const metadata = 'ipfs://snek'
       // missin possibility to handle more than one remark
 
-      const mint = NFTUtils.createNFT(1, metadata, this.nft.edition);
+      const mint = NFTUtils.createNFT(this.selectedCollection.id, metadata, this.nft.edition);
 
       const cb = api.tx.nft.mint
       const args = mint
