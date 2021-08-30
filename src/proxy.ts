@@ -88,7 +88,7 @@ export const pinFileViaSlate = async (file: Blob): Promise<string> => {
     const { status, data } = await Axios.post(SLATE_URL, formData, {
       headers: {
         'Content-Type': `multipart/form-data`,
-        Authorization: `Basic ${process.env.VUE_APP_SLATE_KEY}`
+        Authorization: `${process.env.VUE_APP_SLATE_KEY}`
       }
     });
     console.log('[PROXY] SLATE Image', status, data);
