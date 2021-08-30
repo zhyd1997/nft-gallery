@@ -388,8 +388,8 @@ export default class GalleryItem extends Vue {
 @import "@/styles/variables";
 
 hr.comment-divider {
-  border-top: 1px solid lightpink;
-  border-bottom: 1px solid lightpink;
+  border-top: 1px solid lightcoral;
+  border-bottom: 1px solid lightcoral;
 }
 
 .gallery-item {
