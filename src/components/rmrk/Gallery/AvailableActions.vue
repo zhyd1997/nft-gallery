@@ -47,6 +47,13 @@ const iconResolver: Record<string, DescriptionTuple> = {
   BUY: ['is-success is-dark']
 };
 
+const actionResolver: Record<string, [string, string]> = {
+  SEND: ['nft','transfer'],
+  CONSUME: ['nft','burn'],
+  // LIST: ['is-light'],
+  // BUY: ['is-success is-dark']
+};
+
 type Action = 'SEND' | 'CONSUME' | 'LIST' | 'BUY' | '';
 
 const components = {
@@ -57,11 +64,12 @@ const components = {
 
 @Component({ components })
 export default class AvailableActions extends Mixins(RmrkVersionMixin) {
-  @Prop() public currentOwnerId!: string;
-  @Prop() public accountId!: string;
+  @Prop(String) public currentOwnerId!: string;
+  @Prop(String) public accountId!: string;
   @Prop() public price!: string;
-  @Prop() public nftId!: string;
-  @Prop({ default: () => [] }) public ipfsHashes!: string[];
+  @Prop(String) public nftId!: string;
+  @Prop(String) public collectionId!: string;
+  @Prop({ type: Array, default: () => [] }) public ipfsHashes!: string[];
   private selectedAction: Action = '';
   private meta: string | number = '';
   protected isLoading: boolean = false;
@@ -178,21 +186,23 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
 
   protected async submit() {
     const { api } = Connector.getInstance();
-    const rmrk = this.constructRmrk();
+    // const rmrk = this.constructRmrk();
     this.isLoading = true;
 
     try {
-      showNotification(rmrk);
-      console.log('submit', rmrk);
-      const isBuy = this.isBuy;
-      const cb = isBuy ? api.tx.utility.batchAll : api.tx.system.remark
-      const arg = isBuy ? [api.tx.system.remark(rmrk), api.tx.balances.transfer(this.currentOwnerId, this.price), somePercentFromTX(this.price)] : rmrk
+      showNotification(`[${this.selectedAction}] ${this.nftId}`);
 
-      if (isBuy) {
-        await this.checkBuyBeforeSubmit()
+      const action = actionResolver[this.selectedAction];
+      if (!action || !this.collectionId) {
+        throw new EvalError('Action or Collection not found');
       }
 
-      const tx = await exec(this.accountId, '', cb, [arg], txCb(
+      const [section, method] = action;
+
+      const cb =  api.tx[section][method]
+      const arg = this.getArgs()
+
+      const tx = await exec(this.accountId, '', cb, arg, txCb(
         async (blockHash) => {
           execResultValue(tx);
           showNotification(blockHash.toString(), notificationTypes.info);
@@ -237,6 +247,22 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
       showNotification(`[ERR] ${e}`, notificationTypes.danger);
       console.error(e);
       this.isLoading = false;
+    }
+  }
+  getArgs() {
+    const { selectedAction } = this;
+
+    switch (selectedAction) {
+      case 'BUY':
+        throw new Error('Not implemented');
+      case 'CONSUME':
+        return [[this.collectionId, this.nftId]];
+      case 'LIST':
+        throw new Error('Not implemented');
+      case 'SEND':
+        return [this.meta, [this.collectionId, this.nftId]];
+      default:
+        throw new Error('Action not found');
     }
   }
 

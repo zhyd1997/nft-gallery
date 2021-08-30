@@ -151,7 +151,8 @@
                       :currentOwnerId="nft.currentOwner"
                       :price="nft.price"
                       :nftId="itemId"
-                      :contractId="id"
+
+                      :collectionId="id"
                       :ipfsHashes="[nft.image, nft.animation_url, nft.metadata]"
                       @change="loadMagic"
                     />
