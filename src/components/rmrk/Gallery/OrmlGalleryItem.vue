@@ -37,14 +37,14 @@
             >
               <b-image
                 v-if="!isLoading && imageVisible && !meta.animation_url"
-                :src="meta.image || require('@/assets/koda300x300.svg')"
-                :src-fallback="require('@/assets/koda300x300.svg')"
+                :src="meta.image || '/koda300x300.svg'"
+                :src-fallback="'/koda300x300.svg'"
                 alt="KodaDot NFT minted multimedia"
                 ratio="1by1"
               ></b-image>
               <img
                 class="fullscreen-image"
-                :src="meta.image || require('@/assets/koda300x300.svg')"
+                :src="meta.image || '/koda300x300.svg'"
                 alt="KodaDot NFT minted multimedia"
               />
               <b-skeleton
