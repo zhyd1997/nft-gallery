@@ -3,7 +3,6 @@ import Router from 'vue-router';
 Vue.use(Router);
 import { apiEnabled } from '@/routeGuard';
 
-import Accounts from '@/router/accounts';
 import Transfer from '@/router/transfer';
 import Toolbox from '@/router/toolbox';
 import Rmrk from '@/router/rmrk';
@@ -53,7 +52,6 @@ export default new Router({
       name: 'esCarbonless',
       component: EsCarbonless,
     },
-    ...Accounts,
     ...Transfer,
     ...Toolbox,
     ...Rmrk,
@@ -103,10 +101,21 @@ export default new Router({
         window.location.href = 'https://tally.so/r/mVP06w'
       }
     },
+    {
+      path: '/permafrost',
+      name: 'permafrost',
+      component: {},
+      beforeEnter(to, from, next) {
+        window.location.href = 'https://discord.gg/88da2MEfU9'
+      }
+    },
 		{
 			path: '*',
 			name: 'FourZeroFour',
 			component: FourZeroFour,
 		},
   ],
+  scrollBehavior() {
+    return { x: 0, y: 0 };
+  }
 });
