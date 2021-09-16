@@ -105,6 +105,7 @@ import { generateId } from '@/components/rmrk/service/Consolidator';
 import { supportTx, calculateCost } from '@/utils/support';
 import NFTUtils from '@/components/bsx/NftUtils'
 import TransactionMixin from '@/utils/mixins/txMixin';
+import { version } from 'echarts';
 
 const components = {
   Auth: () => import('@/components/shared/Auth.vue'),
@@ -186,20 +187,25 @@ export default class CreateCollection extends Mixins(
 
 
     try {
-      showNotification(this.rmrkMint.name);
-      const metadata = await this.constructMeta();
-      // const metadata = 'ipfs://snek'
-      const mint = NFTUtils.createCollection(metadata);
+      showNotification(`Creating Collection: ${this.rmrkMint.name}`);
+      // const metadata = await this.constructMeta();
+      const metadata = 'ipfs://ipfs/QmaCWgK91teVsQuwLDt56m2xaUfBCCJLeCsPeJyHEenoES'
 
       const { api } = Connector.getInstance();
-      const cb = api.tx.nft.createClass
+      const cb = api.tx.utility.batchAll
 
-      const args = mint
+      // check available tokenID
+      const [randomId] = window.crypto.getRandomValues(new Uint32Array(1))
+
+      const create = api.tx.uniques.create(randomId, this.accountId);
+      // Option to freeze metadata
+      const meta = api.tx.uniques.setClassMetadata(randomId, metadata, false);
+      const args = [create, meta];
       const tx = await exec(
         this.accountId,
         '',
         cb,
-        args,
+        [args],
         txCb(
           async blockHash => {
             execResultValue(tx);

@@ -35,16 +35,20 @@
   },
   "IntentionId": "Hash",
   "IntentionType": {
-    "_enum": ["SELL", "BUY"]
+    "_enum": [
+      "SELL",
+      "BUY"
+    ]
   },
   "LookupSource": "AccountId",
   "Price": "Balance",
-  "ClassId": "u64",
   "TokenId": "u64",
+  "ClassIdOfUnique": "Compact<u32>",
+  "NftClassIdOf": "u32",
+  "NftTokenIdOf": "u32",
+  "ClassId": "u32",
+  "InstanceId": "u32",
   "ClassData": {
-    "name": "Vec<u8>",
-    "max": "u16",
-    "symbol": "Vec<u8>",
     "is_pool": "bool"
   },
   "TokenData": {

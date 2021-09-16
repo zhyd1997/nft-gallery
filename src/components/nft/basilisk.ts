@@ -6,7 +6,6 @@ export default {
   Amount: 'i128',
   AmountOf: 'Amount',
   Address: 'AccountId',
-  AssetNativeLocation: 'u8',
   OrmlAccountData: {
     free: 'Balance',
     frozen: 'Balance',
@@ -40,8 +39,12 @@ export default {
   },
   LookupSource: 'AccountId',
   Price: 'Balance',
-  ClassId: 'u64',
   TokenId: 'u64',
+  ClassIdOfUnique: 'Compact<u32>',
+  NftClassIdOf: 'u32',
+  NftTokenIdOf: 'u32',
+  ClassId: 'u32',
+  InstanceId: 'u32',
   ClassData: {
     is_pool: 'bool'
   },
