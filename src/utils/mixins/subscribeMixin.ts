@@ -13,6 +13,7 @@ export default class SubscribeMixin extends Vue {
 
   public async subscribe(fn: any, args: any, callback: any) {
     this.subs.push(await fn(...args, callback))
+    // fn(...args, callback).then((unsub) => this.subs.push(unsub));
   }
 
   public beforeDestroy() {

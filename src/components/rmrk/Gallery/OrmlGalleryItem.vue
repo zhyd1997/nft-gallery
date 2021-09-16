@@ -74,14 +74,6 @@
       </div>
       <div class="columns">
         <div class="column is-6">
-          <Appreciation
-            :emotes="emotes"
-            :accountId="accountId"
-            :currentOwnerId="nft.currentOwner"
-            :nftId="nftId"
-            :contractId="id"
-            :burned="nft.burned"
-          />
 
           <div class="nft-title">
             <Name :nft="nft" :isLoading="isLoading" />
@@ -151,7 +143,7 @@
                       :currentOwnerId="nft.currentOwner"
                       :price="nft.price"
                       :nftId="itemId"
-
+                      :delegateId="nft.delegate"
                       :collectionId="id"
                       :ipfsHashes="[nft.image, nft.animation_url, nft.metadata]"
                       @change="loadMagic"
@@ -174,34 +166,21 @@
 </template>
 
 <script lang="ts" >
-import { Component, Vue } from 'vue-property-decorator';
-// import MarkdownItVueLight from 'markdown-it-vue';
-import 'markdown-it-vue/dist/markdown-it-vue-light.css';
-import { NFT, NFTMetadata, Emotion, Emote } from '../service/scheme';
+import { Component, Mixins, Vue } from 'vue-property-decorator';
+import { UniqueNFT as NFT, NFTMetadata } from '../service/scheme';
 import { sanitizeIpfsUrl, resolveMedia } from '../utils';
 import { emptyObject } from '@/utils/empty';
 
-// import AvailableActions from './AvailableActions.vue';
 import { notificationTypes, showNotification } from '@/utils/notification';
 import { Option } from '@polkadot/types';
-import { Codec } from '@polkadot/types/types';
-// import { Toke } from '@/components/bsx/types';
-// import Money from '@/components/shared/format/Money.vue';
-// import/ Sharing from '@/components/rmrk/Gallery/Item/Sharing.vue';
-// import Facts from '@/components/rmrk/Gallery/Item/Facts.vue';
-// import Name from '@/components/rmrk/Gallery/Item/Name.vue';
-
 import isShareMode from '@/utils/isShareMode';
 import { fetchNFTMetadata } from '../utils';
 import { get, set } from 'idb-keyval';
 import { MediaType } from '../types';
 import axios from 'axios';
 import Connector from '@vue-polkadot/vue-api';
-import BN from 'bn.js';
-import { BN_HUNDRED } from '@polkadot/util';
-import { cast } from '@/utils/cast';
-import { TokenInfoOf } from '@/components/bsx/types';
 import { InstanceDetails, InstanceMetadata } from '@polkadot/types/interfaces';
+import SubscribeMixin from '@/utils/mixins/subscribeMixin';
 
 @Component<GalleryItem>({
   metaInfo() {
@@ -238,18 +217,14 @@ import { InstanceDetails, InstanceMetadata } from '@polkadot/types/interfaces';
     Auth: () => import('@/components/shared/Auth.vue'),
     AvailableActions: () => import('./AvailableActions.vue'),
     Facts: () => import('@/components/rmrk/Gallery/Item/Facts.vue'),
-    // MarkdownItVueLight: MarkdownItVueLight as VueConstructor<Vue>,
     Money: () => import('@/components/shared/format/Money.vue'),
     Name: () => import('@/components/rmrk/Gallery/Item/Name.vue'),
     Sharing: () => import('@/components/rmrk/Gallery/Item/Sharing.vue'),
     Appreciation: () => import('./Appreciation.vue'),
     MediaResolver: () => import('../Media/MediaResolver.vue'),
-    // PackSaver: () => import('../Pack/PackSaver.vue'),
-    BaseCommentSection: () =>
-      import('@/components/subsocial/BaseCommentSection.vue')
   }
 })
-export default class GalleryItem extends Vue {
+export default class GalleryItem extends Mixins(SubscribeMixin) {
   private id: string = '';
   private nftId: string | number = '';
   private passsword: string = '';
@@ -260,7 +235,6 @@ export default class GalleryItem extends Vue {
   public isLoading: boolean = true;
   public mimeType: string = '';
   public meta: NFTMetadata = emptyObject<NFTMetadata>();
-  public emotes: Emote[] = [];
   public message: string = '';
   protected itemId: string = '';
   public royalty: string = '';
@@ -271,7 +245,20 @@ export default class GalleryItem extends Vue {
 
   public async created() {
     this.checkId();
-    setTimeout(() => this.loadMagic(), 1000);
+    setTimeout(() => {
+      this.loadMagic();
+      const { api } = Connector.getInstance();
+      this.subscribe(api.query.uniques.asset, [this.id, this.itemId], this.observeOwner)
+    }, 1000);
+  }
+
+  protected observeOwner(data: Option<InstanceDetails>) {
+    console.log(data.toHuman());
+    const instance = data.unwrapOr(null);
+    if (instance) {
+      this.$set(this.nft, 'currentOwner', instance.owner.toHuman());
+      this.$set(this.nft, 'delegate', instance.approved.toHuman());
+    }
   }
 
   public async loadMagic() {
@@ -299,7 +286,7 @@ export default class GalleryItem extends Vue {
         return;
       }
 
-      const nft = await fetchNFTMetadata({ metadata: nftData.data } as NFT);
+      const nft = await fetchNFTMetadata({ metadata: nftData.data.toString() });
 
       this.meta = {
         ...nft,
@@ -307,11 +294,11 @@ export default class GalleryItem extends Vue {
       };
 
       this.nft = {
+        ...this.nft,
         ...nft,
         ...nftData,
         collectionId: this.id,
         issuer: '',
-        currentOwner: ''
       };
     } catch (e) {
       showNotification(`${e}`, notificationTypes.warn);

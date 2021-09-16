@@ -44,6 +44,13 @@
         <!-- <a :href="`https://kusama.subscan.io/account/${nft.currentOwner}`" target="_blank"><Identity :address="nft.currentOwner" /></a> -->
       </p>
     </template>
+    <p class="label">
+        {{ $t('delegate') }}
+      </p>
+    <p class="subtitle is-size-6">
+        <ProfileLink :address="nft.delegate" :showTwitter="true"/>
+        <b-skeleton :count="1" size="is-large" :active="isLoading"></b-skeleton>
+      </p>
   </div>
 </template>
 

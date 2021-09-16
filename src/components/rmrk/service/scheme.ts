@@ -170,6 +170,42 @@ export interface NFT {
   emotes?: Emote[]
 }
 
+export interface UniqueAttribute {
+  key: string;
+  value: string;
+}
+
+export interface UniqueCollection {
+  id: string
+  issuer: string
+  admin?: string
+  freezer: string
+  currentOwner: string
+  metadata?: string
+  nfts?: UniqueNFT[]
+  blockNumber?: bigint
+  burned: boolean
+  frozen: boolean
+  attributes: UniqueAttribute[]
+  metadataFrozen?: boolean;
+}
+
+
+export interface UniqueNFT {
+  id: string
+  issuer: string
+  currentOwner: string
+  delegate?: string
+  metadata?: string
+  burned: boolean
+  frozen: boolean
+  collectionId: string
+  blockNumber?: bigint
+  events: [Event]
+  attributes: UniqueAttribute[]
+  metadataFrozen?: boolean
+}
+
 export interface BasePack {
   _id: string;
   id: string;

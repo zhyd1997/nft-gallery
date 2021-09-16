@@ -265,5 +265,13 @@
   "general": {
     "balance": "Balance",
     "submit": "Submit"
+  },
+  "action": {
+    "SEND": "Send",
+    "CONSUME": "Burn",
+    "DELEGATE": "Delegate transfer",
+    "FREEZE": "Freeze",
+    "THAW": "Unfreeze",
+    "REVOKE": "Cancel delegation"
   }
 }

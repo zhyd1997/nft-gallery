@@ -4,6 +4,7 @@
     <div v-if="accountId" class="buttons">
       <b-button v-for="action in actions" :key="action" :type="iconType(action)[0]"
       outlined
+      expanded
       @click="handleAction(action)">
         {{ action }}
       </b-button>
@@ -27,37 +28,42 @@ import exec, { execResultValue, txCb } from '@/utils/transactionExecutor';
 import { notificationTypes, showNotification } from '@/utils/notification';
 import { unpin } from '@/proxy';
 import RmrkVersionMixin from '@/utils/mixins/rmrkVersionMixin';
-import { somePercentFromTX } from '@/utils/support';
 import shouldUpdate from '@/utils/shouldUpdate';
 import nftById from '@/queries/nftById.graphql';
+import Null from '@/params/components/Null.vue';
 
-const ownerActions = ['SEND', 'CONSUME', 'LIST'];
-const buyActions = ['BUY'];
+const ownerActions = ['SEND', 'CONSUME', 'DELEGATE', 'FREEZE'];
+const buyActions: string[] = [];
+const delegatorActions: string[] = ['SEND'];
 
 const needMeta: Record<string, string> = {
   SEND: 'AddressInput',
-  LIST: 'BalanceInput'
+  DELEGATE: 'AddressInput',
 };
 
 type DescriptionTuple = [string, string] | [string];
 const iconResolver: Record<string, DescriptionTuple> = {
   SEND: ['is-info is-dark'],
   CONSUME: ['is-danger'],
-  LIST: ['is-light'],
-  BUY: ['is-success is-dark']
+  DELEGATE: ['is-light'],
+  BUY: ['is-success is-dark'],
+  FREEZE: ['is-warning is-dark'],
 };
 
 const actionResolver: Record<string, [string, string]> = {
-  SEND: ['nft','transfer'],
-  CONSUME: ['nft','burn'],
+  SEND: ['uniques','transfer'],
+  CONSUME: ['uniques','burn'],
+  DELEGATE: ['uniques','approveTransfer'],
+  FREEZE: ['uniques','freeze'],
+  THAW: ['uniques','thaw'],
+  REVOKE: ['uniques','cancelApproval'],
   // LIST: ['is-light'],
   // BUY: ['is-success is-dark']
 };
 
-type Action = 'SEND' | 'CONSUME' | 'LIST' | 'BUY' | '';
+type Action = 'SEND' | 'CONSUME' | 'FREEZE' | 'DELEGATE' | '';
 
 const components = {
-  BalanceInput: () => import('@/components/shared/BalanceInput.vue'),
   AddressInput: () => import('@/components/shared/AddressInput.vue'),
   Loader: () => import('@/components/shared/Loader.vue')
 };
@@ -66,6 +72,7 @@ const components = {
 export default class AvailableActions extends Mixins(RmrkVersionMixin) {
   @Prop(String) public currentOwnerId!: string;
   @Prop(String) public accountId!: string;
+  @Prop({ type: [String, Null] }) public delegateId!: string;
   @Prop() public price!: string;
   @Prop(String) public nftId!: string;
   @Prop(String) public collectionId!: string;
@@ -76,11 +83,15 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
   protected status = ''
 
   get actions() {
-    return this.isOwner
-      ? ownerActions
-      : this.isAvailableToBuy
-      ? buyActions
-      : [];
+    if (this.isOwner) {
+      return ownerActions;
+    }
+
+    if (this.isDelegator) {
+      return delegatorActions;
+    }
+
+    return [];
   }
 
   get showSubmit() {
@@ -110,6 +121,14 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
       this.selectedAction = '';
       this.meta = '';
     }
+  }
+
+  get isDelegator() {
+    return (
+      this.delegateId &&
+      this.accountId &&
+      this.delegateId === this.accountId
+    );
   }
 
   get isOwner() {
@@ -143,16 +162,16 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
     }`;
   }
 
-  get isBuy() {
-    return this.selectedAction === 'BUY';
+  get isFreeze() {
+    return this.selectedAction === 'FREEZE';
   }
 
   get isConsume() {
     return this.selectedAction === 'CONSUME';
   }
 
-  get isList() {
-    return this.selectedAction === 'LIST';
+  get isDelegate() {
+    return this.selectedAction === 'DELEGATE';
   }
 
   get isSend() {
@@ -186,7 +205,6 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
 
   protected async submit() {
     const { api } = Connector.getInstance();
-    // const rmrk = this.constructRmrk();
     this.isLoading = true;
 
     try {
@@ -253,14 +271,14 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
     const { selectedAction } = this;
 
     switch (selectedAction) {
-      case 'BUY':
-        throw new Error('Not implemented');
+      case 'FREEZE':
+        throw [this.collectionId, this.nftId];
       case 'CONSUME':
-        return [[this.collectionId, this.nftId]];
-      case 'LIST':
-        throw new Error('Not implemented');
+        return [this.collectionId, this.nftId, this.accountId];
+      case 'DELEGATE':
+        return [this.collectionId, this.nftId, this.meta];
       case 'SEND':
-        return [this.meta, [this.collectionId, this.nftId]];
+        return [this.collectionId, this.nftId, this.meta];
       default:
         throw new Error('Action not found');
     }
@@ -278,12 +296,6 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
     });
   }
 
-  unlistNft() {
-    // change the selected action to list and change meta value to 0
-    this.selectedAction = 'LIST';
-    this.meta = 0;
-    this.submit();
-  }
 }
 </script>
 

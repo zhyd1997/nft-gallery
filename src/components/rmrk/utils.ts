@@ -35,6 +35,10 @@ export const arweaveProviders: Record<ArweaveProviders, string> = {
 
 export type SanitizerFunc = (url: string) => string
 
+export type ObjectWithMeta = {
+  metadata?: string;
+}
+
 
 
 export const ipfsHashToUrl = (ipfsHash?: string, provider?: ProviderKeyType) => {
@@ -67,20 +71,20 @@ export const fetchCollectionMetadata = (
 ): Promise<CollectionMetadata> => fetchMetadata<CollectionMetadata>(rmrk)
 
 export const fetchNFTMetadata = (
-  rmrk: NFT,
+  rmrk: NFT | ObjectWithMeta,
   sanitizer: SanitizerFunc = sanitizeIpfsUrl
 ): Promise<NFTMetadata> => fetchMetadata<NFTMetadata>(rmrk, sanitizer)
 
 export const fetchMetadata = async <T>(
-  rmrk: RmrkType | CollectionOrNFT,
+  instance: ObjectWithMeta,
   sanitizer: SanitizerFunc = sanitizeIpfsUrl
 ): Promise<T> => {
   try {
-    if (!rmrk.metadata) {
+    if (!instance.metadata) {
       return emptyObject<T>();
     }
 
-    const { status, data } = await api.get(sanitizer(rmrk.metadata));
+    const { status, data } = await api.get(sanitizer(instance.metadata));
     console.log('IPFS data', status, data);
     if (status < 400) {
       return data as T;
