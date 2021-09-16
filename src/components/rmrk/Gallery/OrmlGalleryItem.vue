@@ -201,6 +201,7 @@ import BN from 'bn.js';
 import { BN_HUNDRED } from '@polkadot/util';
 import { cast } from '@/utils/cast';
 import { TokenInfoOf } from '@/components/bsx/types';
+import { InstanceDetails, InstanceMetadata } from '@polkadot/types/interfaces';
 
 @Component<GalleryItem>({
   metaInfo() {
@@ -282,8 +283,8 @@ export default class GalleryItem extends Vue {
       const nftId = this.itemId || 0;
       this.nftId = nftId;
 
-      const nftQ = await api.query.ormlNft
-        .tokens<Option<Codec>>(this.id, nftId)
+      const nftQ = await api.query.uniques
+        .instanceMetadataOf<Option<InstanceMetadata>>(this.id, nftId)
         .then(res => res.unwrapOr(null));
 
       if (!nftQ) {
@@ -291,8 +292,14 @@ export default class GalleryItem extends Vue {
         return;
       }
 
-      const nftData = cast<TokenInfoOf>(nftQ.toHuman());
-      const nft = await fetchNFTMetadata({ metadata: nftData.metadata } as NFT);
+      const nftData = nftQ.toHuman();
+
+      if (!nftData.data) {
+        showNotification(`No Metadata with ID ${nftId}`, notificationTypes.warn);
+        return;
+      }
+
+      const nft = await fetchNFTMetadata({ metadata: nftData.data } as NFT);
 
       this.meta = {
         ...nft,
@@ -303,8 +310,8 @@ export default class GalleryItem extends Vue {
         ...nft,
         ...nftData,
         collectionId: this.id,
-        issuer: nftData.owner,
-        currentOwner: nftData.owner
+        issuer: '',
+        currentOwner: ''
       };
     } catch (e) {
       showNotification(`${e}`, notificationTypes.warn);
