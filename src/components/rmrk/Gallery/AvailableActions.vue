@@ -1,6 +1,7 @@
 <template>
   <div>
     <Loader v-model="isLoading" :status="status" />
+    <div v-if="frozen" class="sub-title is-6 has-text-info">Frozen</div>
     <div v-if="accountId" class="buttons">
       <b-button v-for="action in actions" :key="action" :type="iconType(action)[0]"
       outlined
@@ -76,6 +77,7 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
   @Prop() public price!: string;
   @Prop(String) public nftId!: string;
   @Prop(String) public collectionId!: string;
+  @Prop(Boolean) public frozen!: boolean;
   @Prop({ type: Array, default: () => [] }) public ipfsHashes!: string[];
   private selectedAction: Action = '';
   private meta: string | number = '';

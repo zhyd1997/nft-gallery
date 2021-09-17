@@ -1,6 +1,6 @@
 <template>
   <div class="card nft-card" :class="{'is-current-owner': accountIsCurrentOwner()}">
-    <LinkResolver class="nft-card__skeleton" :route="type" :param="id" :link="link" tag="div" >
+    <LinkResolver class="nft-card__skeleton" :route="type" :param="params" :link="link" tag="div" >
       <div class="card-image" v-if="image">
         <span v-if="emoteCount" class="card-image__emotes">
           <b-icon icon="heart" />
@@ -40,9 +40,9 @@
       </div>
 
       <div class="card-content">
-        <span class="title mb-0 is-4 has-text-centered has-text-primary" :title="name">
+        <span class="title mb-0 is-4 has-text-centered has-text-primary" :title="nftName">
           <div class="has-text-overflow-ellipsis">
-            {{ name }}
+            {{ nftName }}
           </div>
         </span>
       </div>
@@ -56,6 +56,7 @@ import { get, update } from 'idb-keyval';
 import shouldUpdate from '@/utils/shouldUpdate';
 import { sanitizeIpfsUrl, fetchNFTMetadata, getSanitizer } from '../utils';
 import { NFT } from '../service/scheme';
+
 
 const components = {
   LinkResolver: () => import('@/components/shared/LinkResolver.vue'),
@@ -76,8 +77,18 @@ export default class GalleryCard extends Vue {
   @Prop() public price!: string;
   @Prop() public metadata!: string;
   @Prop() public currentOwner!: string;
+  @Prop(Function) public formatId!: (id: string) => string | object;;
+
 
   private placeholder = '/koda300x300.svg';
+
+  get nftName(): string {
+    return this.name || this.title
+  }
+
+  get params(): string | object {
+    return this.formatId ? this.formatId(this.id) : this.id;
+  }
 
   async mounted() {
 

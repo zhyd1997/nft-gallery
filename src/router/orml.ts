@@ -9,14 +9,15 @@ const CollectionItem = () => import('@/components/rmrk/Gallery/OrmlCollection.vu
 const ViewModel = () => import('@/components/rmrk/Gallery/ViewModel.vue')
 const SimpleMint = () => import('@/components/rmrk/Create/SimpleMint.vue')
 
-const User = {
-  template: '<router-view></router-view>'
+const DetailNavigation = {
+  template: '<router-view></router-view>',
+  name: 'DetailNavigation',
 }
 
 export default [
   {
     path: '/detail/:id',
-    component: User,
+    component: DetailNavigation,
     children: [
       { path: '', name: 'contractDetail', component: CollectionItem },
       { path: ':item', name: 'superDetail', component: GalleryItem },

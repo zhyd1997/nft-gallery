@@ -77,7 +77,7 @@ export interface NFTMetadata extends Metadata {
 
 
 export interface CollectionMetadata extends Metadata {
-
+  name: string;
 }
 
 

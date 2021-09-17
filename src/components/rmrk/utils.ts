@@ -67,7 +67,7 @@ export const fetchPackMetadata = (
 ): Promise<PackMetadata> => fetchMetadata<PackMetadata>(rmrk)
 
 export const fetchCollectionMetadata = (
-  rmrk: Collection
+  rmrk: Collection | ObjectWithMeta,
 ): Promise<CollectionMetadata> => fetchMetadata<CollectionMetadata>(rmrk)
 
 export const fetchNFTMetadata = (

@@ -5,14 +5,16 @@
       v-for="nft in items"
       :key="nft.id"
     >
-      <GalleryCard :id="nft.id"
-                   :name="nft.name"
-                   :type="type"
-                   :link="link"
-                   :metadata="nft.metadata"
-                   :price="nft.price"
-                   :emoteCount="nft.emoteCount"
-                   :currentOwner="nft.currentOwner"
+      <GalleryCard
+        :id="nft.id"
+        :name="nft.name"
+        :type="type"
+        :link="link"
+        :metadata="nft.metadata"
+        :price="nft.price"
+        :emoteCount="nft.emoteCount"
+        :currentOwner="nft.currentOwner"
+        :formatId="formatId"
       />
     </div>
   </div>
@@ -31,5 +33,6 @@ export default class GalleryCardList extends Vue {
   @Prop({ default: 'nftDetail' }) public type!: string;
   @Prop({ default: 'rmrk/detail' }) public link!: string;
   @Prop() public items!: RmrkType[];
+  @Prop(Function) public formatId!: (id: string) => string | object;
 }
 </script>

@@ -239,7 +239,7 @@ export default class Sharing extends Vue {
   @import "@/styles/variables";
 
 .share {
-  box-shadow: 0px 0px 5px 0.5px #d32e79;
+  box-shadow: 0px 0px 5px 0.5px $primary;
 
   &__button {
     color: $primary;

@@ -2,24 +2,29 @@
   <div class="pack-item-wrapper container">
     <div class="columns">
       <div class="column">
-        <h1 class="title is-4">
-          Collection {{ id }}
-        </h1>
+        <h1 class="title is-4">Collection {{ name }}</h1>
       </div>
       <div class="column">
         <p v-if="issuer" class="subtitle">
-          Creator <ProfileLink :address="issuer" :inline="true" :showTwitter="true"/>
+          Creator
+          <ProfileLink :address="issuer" :inline="true" :showTwitter="true" />
         </p>
       </div>
       <div class="column is-2">
-        <!-- <Sharing v-if="sharingVisible"
+        <Sharing
+          v-if="sharingVisible"
           label="Check this awesome Collection on %23KusamaNetwork %23KodaDot"
-          :iframe="iframeSettings" /> -->
+          :iframe="iframeSettings"
+        />
       </div>
     </div>
 
-    <GalleryCardList :items="nfts" type="superDetail" :collection="id" />
-
+    <GalleryCardList
+      :items="nfts"
+      type="superDetail"
+      :collection="id"
+      :formatId="formater"
+    />
   </div>
 </template>
 
@@ -28,78 +33,117 @@ import { emptyObject } from '@/utils/empty';
 import { cast } from '@/utils/cast';
 import { notificationTypes, showNotification } from '@/utils/notification';
 import { Component, Vue } from 'vue-property-decorator';
-import { CollectionWithMeta, NFTWithMeta, Collection, NFT, NFTMetadata } from '../service/scheme';
-import { sanitizeIpfsUrl, fetchCollectionMetadata, fetchNFTMetadata } from '../utils';
+import { fetchCollectionMetadata } from '../utils';
 import isShareMode from '@/utils/isShareMode';
 
 import Connector from '@vue-polkadot/vue-api';
 import { Option } from '@polkadot/types';
-import { Codec } from '@polkadot/types/types';
-import { ClassInfoOf } from '@/components/bsx/types';
+import { UniqueCollection as Collection, NFTWithMeta } from '../service/scheme';
+import { ClassMetadata } from '@polkadot/types/interfaces';
+import collectionById from '@/queries/bsx/collectionById.graphql';
+import { CollectionMetadata } from '@/components/rmrk/service/scheme';
+import { tokenIdToRoute } from '@/components/nft/utils';
 
 const components = {
-  GalleryCardList: () => import('@/components/rmrk/Gallery/GalleryCardList.vue'),
+  GalleryCardList: () =>
+    import('@/components/rmrk/Gallery/GalleryCardList.vue'),
   Sharing: () => import('@/components/rmrk/Gallery/Item/Sharing.vue'),
   ProfileLink: () => import('@/components/rmrk/Profile/ProfileLink.vue')
 };
 
 @Component<OrmlCollection>({
-  components })
+  components
+})
 export default class OrmlCollection extends Vue {
-  private issuer: string = '';
   private id: string = '';
-  private collection: ClassInfoOf = emptyObject();
+  private collection: Collection & CollectionMetadata = emptyObject();
   private nfts: NFTWithMeta[] = [];
   private isLoading: boolean = false;
-
+  private formater = tokenIdToRoute;
 
   get name() {
-    return this.id
+    return this.collection.name || this.id;
   }
 
+  get issuer() {
+    return this.collection.issuer || '';
+  }
 
   get sharingVisible() {
-    return !isShareMode
+    return !isShareMode;
   }
 
   public created() {
     this.checkId();
-    this.loadMagic();
+    this.fetchCollection();
+    setTimeout(() => {
+      this.loadMagic();
+      // const { api } = Connector.getInstance();
+      // this.subscribe(api.query.uniques.asset, [this.id, this.itemId], this.observeOwner)
+    }, 1000);
   }
 
-    public async loadMagic() {
+  private async fetchCollection() {
+    const nfts = this.$apollo.query({
+      query: collectionById,
+      variables: {
+        id: this.id
+      }
+    });
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const {
+      data: {
+        collectionEntity: {
+          nfts: { nodes: nftList },
+          ...col
+        }
+      }
+    } = await nfts;
 
+    this.collection = {
+      ...col
+    };
 
+    this.nfts = nftList;
+  }
+
+  public async loadMagic() {
     const { api } = Connector.getInstance();
-
-
-
+    await api?.isReady;
 
     try {
+      const collectionQ = await api.query.uniques
+        .classMetadataOf<Option<ClassMetadata>>(this.id)
+        .then(res => res.unwrapOr(null));
 
-      const classP = api.query.ormlNft.classes<Option<Codec>>(this.id);
-      const nftP = api.query.ormlNft.tokens<Option<Codec>>(this.id, '');
-
-
-      const classResult = await classP;
-
-
-      if (classResult.isSome) {
-        const collection = classResult.unwrap();
-        this.collection = cast<ClassInfoOf>(collection.toHuman());
-
-        const nftResult = await nftP;
-
-        if (nftResult.isSome) {
-          const nfts = nftResult.unwrap();
-          console.log(nfts)
-        }
-
+      if (!collectionQ) {
+        showNotification(
+          `No Collection with ID ${this.id}`,
+          notificationTypes.warn
+        );
+        return;
       }
 
+      const collectionData = collectionQ.toHuman();
 
+      if (!collectionData.data) {
+        showNotification(
+          `No Metadata with ID ${this.id}`,
+          notificationTypes.info
+        );
+        // return;
+        // not a handicap tho
+      }
+
+      const collection = await fetchCollectionMetadata({
+        metadata: collectionData?.data?.toString()
+      });
+
+      this.collection = {
+        ...this.collection,
+        ...collection,
+        attributes: []
+      };
     } catch (e) {
       showNotification(`${e}`, notificationTypes.warn);
       console.warn(e);
@@ -115,8 +159,7 @@ export default class OrmlCollection extends Vue {
   }
 
   get iframeSettings() {
-    return { width: '100%', height: '100vh' }
+    return { width: '100%', height: '100vh' };
   }
 }
-
 </script>

@@ -74,7 +74,6 @@
       </div>
       <div class="columns">
         <div class="column is-6">
-
           <div class="nft-title">
             <Name :nft="nft" :isLoading="isLoading" />
           </div>
@@ -146,6 +145,7 @@
                       :delegateId="nft.delegate"
                       :collectionId="id"
                       :ipfsHashes="[nft.image, nft.animation_url, nft.metadata]"
+                      :frozen="nft.frozen"
                       @change="loadMagic"
                     />
                   </p>
@@ -221,7 +221,7 @@ import SubscribeMixin from '@/utils/mixins/subscribeMixin';
     Name: () => import('@/components/rmrk/Gallery/Item/Name.vue'),
     Sharing: () => import('@/components/rmrk/Gallery/Item/Sharing.vue'),
     Appreciation: () => import('./Appreciation.vue'),
-    MediaResolver: () => import('../Media/MediaResolver.vue'),
+    MediaResolver: () => import('../Media/MediaResolver.vue')
   }
 })
 export default class GalleryItem extends Mixins(SubscribeMixin) {
@@ -248,7 +248,11 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
     setTimeout(() => {
       this.loadMagic();
       const { api } = Connector.getInstance();
-      this.subscribe(api.query.uniques.asset, [this.id, this.itemId], this.observeOwner)
+      this.subscribe(
+        api.query.uniques.asset,
+        [this.id, this.itemId],
+        this.observeOwner
+      );
     }, 1000);
   }
 
@@ -258,6 +262,11 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
     if (instance) {
       this.$set(this.nft, 'currentOwner', instance.owner.toHuman());
       this.$set(this.nft, 'delegate', instance.approved.toHuman());
+      console.log('isFreezed', instance.isFrozen);
+      this.$set(this.nft, 'frozen', instance.isFrozen.eq(true));
+    } else {
+      // check if not burned because burned returns null
+      showNotification(`NFT ${this.itemId} does not exist or burned`, notificationTypes.warn);
     }
   }
 
@@ -282,7 +291,10 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
       const nftData = nftQ.toHuman();
 
       if (!nftData.data) {
-        showNotification(`No Metadata with ID ${nftId}`, notificationTypes.warn);
+        showNotification(
+          `No Metadata with ID ${nftId}`,
+          notificationTypes.warn
+        );
         return;
       }
 
@@ -298,7 +310,7 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
         ...nft,
         ...nftData,
         collectionId: this.id,
-        issuer: '',
+        issuer: ''
       };
     } catch (e) {
       showNotification(`${e}`, notificationTypes.warn);
