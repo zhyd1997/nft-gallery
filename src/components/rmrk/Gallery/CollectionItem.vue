@@ -1,11 +1,17 @@
 <template>
   <div class="pack-item-wrapper container">
-    <div class="columns">
-      <div class="column">
-        <h1 class="title">
-          Collection {{ name }}
+    <div class="columns is-centered">
+      <div class="column is-half has-text-centered">
+        <figure class="image container is-128x128">
+          <img class="is-rounded" :src="image">
+        </figure>
+        <h1 class="title is-2 mt-2">
+          {{ name }}
         </h1>
       </div>
+    </div>
+
+    <div class="columns">
       <div class="column">
         <p class="subtitle">
           Creator <ProfileLink :address="issuer" :inline="true" :showTwitter="true"/>
@@ -21,6 +27,16 @@
       </div>
     </div>
 
+    <CollectionActivity :nfts="collection.nfts" />
+
+    <div class="columns is-centered">
+      <div class="column is-8 has-text-centered">
+        <p class="content">
+          {{ description }}
+        </p>
+      </div>
+    </div>
+
     <GalleryCardList :items="collection.nfts" />
 
   </div>
@@ -30,18 +46,17 @@
 import { emptyObject } from '@/utils/empty';
 import { notificationTypes, showNotification } from '@/utils/notification';
 import { Component, Vue } from 'vue-property-decorator';
-import { CollectionWithMeta, NFTWithMeta, Collection } from '../service/scheme';
+import { CollectionWithMeta, Collection } from '../service/scheme';
 import { sanitizeIpfsUrl, fetchCollectionMetadata } from '../utils';
 import isShareMode from '@/utils/isShareMode';
 import collectionById from '@/queries/collectionById.graphql'
 import { CollectionMetadata } from '../types';
-
 const components = {
   GalleryCardList: () => import('@/components/rmrk/Gallery/GalleryCardList.vue'),
+  CollectionActivity: () => import('@/components/rmrk/Gallery/CollectionActivity.vue'),
   Sharing: () => import('@/components/rmrk/Gallery/Item/Sharing.vue'),
-  ProfileLink: () => import('@/components/rmrk/Profile/ProfileLink.vue')
+  ProfileLink: () => import('@/components/rmrk/Profile/ProfileLink.vue'),
 };
-
 @Component<CollectionItem>({
   metaInfo() {
     return {
@@ -64,12 +79,23 @@ const components = {
 export default class CollectionItem extends Vue {
   private id: string = '';
   private collection: CollectionWithMeta = emptyObject<CollectionWithMeta>();
-  private nfts: NFTWithMeta[] = [];
   private isLoading: boolean = false;
   public meta: CollectionMetadata = emptyObject<CollectionMetadata>();
 
-  get name() {
+  get image() {
+    return this.meta.image || ''
+  }
+
+  get description() {
+    return this.meta.description || ''
+  }
+
+	get name() {
     return this.collection.name || this.id
+  }
+
+  get nfts() {
+    return this.collection.nfts || []
   }
 
   get issuer() {
