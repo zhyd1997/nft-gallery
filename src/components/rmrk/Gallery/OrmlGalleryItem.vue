@@ -266,7 +266,7 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
       this.$set(this.nft, 'frozen', instance.isFrozen.eq(true));
     } else {
       // check if not burned because burned returns null
-      showNotification(`NFT ${this.itemId} does not exist or burned`, notificationTypes.warn);
+      this.nft = emptyObject<NFT>();
     }
   }
 
