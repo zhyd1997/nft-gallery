@@ -5,3 +5,5 @@ export const tokenIdToRoute = (tokenId: string): object => {
     item
   }
 }
+
+export const createTokenId = (collection: string, id: string) => `${collection}-${id}`

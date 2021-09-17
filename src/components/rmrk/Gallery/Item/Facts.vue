@@ -27,13 +27,6 @@
           <p class="subtitle is-size-6">
             <b>DEPOSIT: </b>{{ nft.deposit }}
           </p>
-          <p class="subtitle is-size-6" v-show="attrs.length">
-            <b>ATTRIBUTES: </b>
-            <br />
-             <b-taglist>
-              <b-tag type="is-dark" size="is-medium" v-for="(tag, index) in attrs" :key="index">{{tag.key}}: {{tag.value}}</b-tag>
-            </b-taglist>
-          </p>
           <ArweaveLink v-if="meta.image_ar" :id="meta.image_ar" label="image" />
           <ArweaveLink v-if="nft.animationArId" :id="nft.animationArId" label="animated" />
           <p v-if="imageId" class="subtitle is-size-6"  >
@@ -59,7 +52,7 @@
 <script lang="ts" >
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { extractCid } from '@/utils/ipfs';
-import { NFT, NFTMetadata, UniqueAttribute } from '../../service/scheme';
+import { UniqueNFT as NFT, NFTMetadata, UniqueAttribute } from '../../service/scheme';
 import { emptyObject } from '@/utils/empty';
 const components = {
   ArweaveLink: () => import('@/components/shared/ArweaveLink.vue')
@@ -69,7 +62,6 @@ const components = {
 export default class Facts extends Vue {
   @Prop({ default: () => emptyObject<NFT>() }) public nft!: NFT;
   @Prop({ default: () => emptyObject<NFTMetadata>() }) public meta!: NFTMetadata;
-  @Prop({ type: Array, default: () => [] }) private attributes!: UniqueAttribute[];
   public multimediaCid: string = '';
   public showGwLinks: boolean = false;
   public gwList: any = [
@@ -82,10 +74,6 @@ export default class Facts extends Vue {
 
   get tags() {
     return this.meta.attributes?.filter(({ trait_type }) => !trait_type).map(({ value }) => value)
-  }
-
-  get attrs() {
-    return this.attributes
   }
 
 

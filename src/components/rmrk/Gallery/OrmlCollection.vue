@@ -31,6 +31,11 @@
       <div class="column is-8 has-text-centered">
         <p class="content">
           {{ description }}
+          <CollapseWrapper v-if="attributes && attributes.length" visible="attribute.show" hidden="attribute.hide">
+            <div v-for="(attr, index) in attributes" :key="index">
+              <span class="text-bold">{{ attr.key }}: </span><span>{{ attr.value }}</span>
+            </div>
+          </CollapseWrapper>
         </p>
       </div>
     </div>
@@ -55,7 +60,7 @@ import isShareMode from '@/utils/isShareMode';
 
 import Connector from '@vue-polkadot/vue-api';
 import { Option } from '@polkadot/types';
-import { UniqueCollection as Collection, NFTWithMeta } from '../service/scheme';
+import { UniqueCollection as Collection, NFTWithMeta, UniqueAttribute } from '../service/scheme';
 import { ClassMetadata } from '@polkadot/types/interfaces';
 import collectionById from '@/queries/bsx/collectionById.graphql';
 import { CollectionMetadata } from '@/components/rmrk/service/scheme';
@@ -65,7 +70,8 @@ const components = {
   GalleryCardList: () =>
     import('@/components/rmrk/Gallery/GalleryCardList.vue'),
   Sharing: () => import('@/components/rmrk/Gallery/Item/Sharing.vue'),
-  ProfileLink: () => import('@/components/rmrk/Profile/ProfileLink.vue')
+  ProfileLink: () => import('@/components/rmrk/Profile/ProfileLink.vue'),
+  CollapseWrapper: () => import('@/components/shared/collapse/CollapseWrapper.vue'),
 };
 
 @Component<OrmlCollection>({
@@ -74,6 +80,7 @@ const components = {
 export default class OrmlCollection extends Vue {
   private id: string = '';
   private collection: Collection & CollectionMetadata = emptyObject();
+  private attributes: UniqueAttribute[] = [];
   private nfts: NFTWithMeta[] = [];
   private isLoading: boolean = false;
   private formater = tokenIdToRoute;
@@ -100,6 +107,10 @@ export default class OrmlCollection extends Vue {
 
   get sharingVisible() {
     return !isShareMode
+  }
+
+  get hasAttributes() {
+    return this.collection.attributes && this.collection.attributes.length > 0
   }
 
   public created() {
@@ -129,7 +140,10 @@ export default class OrmlCollection extends Vue {
       }
     } = await nfts;
 
+    this.attributes = [...col.attributes || []];
+
     this.collection = {
+      ...this.collection,
       ...col
     };
 

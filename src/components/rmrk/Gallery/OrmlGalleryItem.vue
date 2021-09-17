@@ -82,10 +82,19 @@
             {{ $t("legend") }}
           </p>
 
-          <div class="subtitle is-size-7">
-            <p v-if="!isLoading" class="subtitle is-size-5">
+          <div class="sub-title is-size-6">
+            <p v-if="!isLoading">
               {{ meta.description }}
-              <!-- <markdown-it-vue-light class="md-body" :content="nft.description"/> -->
+              <CollapseWrapper
+                v-if="attributes && attributes.length"
+                visible="attribute.show"
+                hidden="attribute.hide"
+              >
+                <div v-for="(attr, index) in attributes" :key="index">
+                  <span class="text-bold">{{ attr.key }}: </span
+                  ><span>{{ attr.value }}</span>
+                </div>
+              </CollapseWrapper>
             </p>
             <b-skeleton
               :count="3"
@@ -181,6 +190,8 @@ import axios from 'axios';
 import Connector from '@vue-polkadot/vue-api';
 import { InstanceDetails, InstanceMetadata } from '@polkadot/types/interfaces';
 import SubscribeMixin from '@/utils/mixins/subscribeMixin';
+import nftById from '@/queries/bsx/nftById.graphql';
+import { createTokenId } from '@/components/nft/utils';
 
 @Component<GalleryItem>({
   metaInfo() {
@@ -221,7 +232,8 @@ import SubscribeMixin from '@/utils/mixins/subscribeMixin';
     Name: () => import('@/components/rmrk/Gallery/Item/Name.vue'),
     Sharing: () => import('@/components/rmrk/Gallery/Item/Sharing.vue'),
     Appreciation: () => import('./Appreciation.vue'),
-    MediaResolver: () => import('../Media/MediaResolver.vue')
+    MediaResolver: () => import('../Media/MediaResolver.vue'),
+    CollapseWrapper: () => import('@/components/shared/collapse/CollapseWrapper.vue'),
   }
 })
 export default class GalleryItem extends Mixins(SubscribeMixin) {
@@ -245,6 +257,7 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
 
   public async created() {
     this.checkId();
+    this.fetchCollection();
     setTimeout(() => {
       this.loadMagic();
       const { api } = Connector.getInstance();
@@ -320,6 +333,28 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
     this.isLoading = false;
   }
 
+  private async fetchCollection() {
+    const nft = await this.$apollo.query({
+      query: nftById,
+      variables: {
+        id: createTokenId(this.id, this.itemId)
+      }
+    });
+
+    const {
+      data: { nFTEntity }
+    } = nft;
+
+    if (!nFTEntity) {
+      return;
+    }
+
+    this.nft = {
+      ...this.nft,
+      ...nFTEntity
+    };
+  }
+
   public async fetchMetadata() {
     console.log(this.nft.emotes);
 
@@ -377,6 +412,10 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
 
   get hasPrice() {
     return true;
+  }
+
+  get attributes() {
+    return this.nft?.attributes || [];
   }
 
   get detailVisible() {
