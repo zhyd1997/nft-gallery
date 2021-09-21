@@ -1,13 +1,16 @@
 import { ClassData, TokenData } from './types';
 
+type Id = string | number;
+
 class NFTUtils {
-  static createCollection(metadata: string): [string, ClassData] {
-    return [metadata, new ClassData()];
+  static createCollection(id: Id, admin: string, metadata: string): [string, string, string] {
+    return [String(id), admin, metadata];
   }
 
-  static createNFT(classId: string | number, metadata: string, quantity: number = 1)  {
-    return [classId, metadata, new TokenData(), quantity];
+  static createNFT(classId: Id, id: Id, owner: string, royalty: number, metadata: string)  {
+    return [String(classId), String(id), owner, royalty, metadata];
   }
+
 
 }
 

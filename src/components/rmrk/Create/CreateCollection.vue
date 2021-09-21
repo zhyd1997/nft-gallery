@@ -192,20 +192,17 @@ export default class CreateCollection extends Mixins(
       const metadata = 'ipfs://ipfs/QmaCWgK91teVsQuwLDt56m2xaUfBCCJLeCsPeJyHEenoES'
 
       const { api } = Connector.getInstance();
-      const cb = api.tx.utility.batchAll
+      const cb = api.tx.nft.createClass
 
       // check available tokenID
       const [randomId] = window.crypto.getRandomValues(new Uint32Array(1))
 
-      const create = api.tx.uniques.create(randomId, this.accountId);
-      // Option to freeze metadata
-      const meta = api.tx.uniques.setClassMetadata(randomId, metadata, false);
-      const args = [create, meta];
+      const args = NFTUtils.createCollection(randomId, this.accountId, metadata);
       const tx = await exec(
         this.accountId,
         '',
         cb,
-        [args],
+        args,
         txCb(
           async blockHash => {
             execResultValue(tx);
