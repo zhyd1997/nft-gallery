@@ -21,12 +21,12 @@
                 <div class="image-preview has-text-centered" :class="{fullscreen: isFullScreenView}">
                   <b-image
                     v-if="!isLoading && imageVisible && !meta.animation_url"
-                    :src="meta.image || '/koda300x300.svg'"
-                    :src-fallback="'/koda300x300.svg'"
+                    :src="meta.image || '/placeholder.svg'"
+                    src-fallback="/placeholder.svg'"
                     alt="KodaDot NFT minted multimedia"
                     ratio="1by1"
                   ></b-image>
-                  <img class="fullscreen-image" :src="meta.image || '/koda300x300.svg'" alt="KodaDot NFT minted multimedia">
+                  <img class="fullscreen-image" :src="meta.image || '/placeholder.svg'" alt="KodaDot NFT minted multimedia">
                   <b-skeleton height="524px" size="is-large" :active="isLoading"></b-skeleton>
                   <MediaResolver v-if="meta.animation_url" :class="{ withPicture: imageVisible }" :src="meta.animation_url" :mimeType="mimeType" />
                 </div>
@@ -84,15 +84,17 @@
                   <div class="content">
                     <p class="subtitle">
                       <Auth />
-                      <AvailableActions
-                      ref="actions"
-                      :accountId="accountId"
-                      :currentOwnerId="nft.currentOwner"
-                      :price="nft.price"
-                      :nftId="nft.id"
-                      :ipfsHashes="[nft.image, nft.animation_url, nft.metadata]"
-                      @change="handleAction"
-                      />
+                      <IndexerGuard showMessage>
+                        <AvailableActions
+                        ref="actions"
+                        :accountId="accountId"
+                        :currentOwnerId="nft.currentOwner"
+                        :price="nft.price"
+                        :nftId="nft.id"
+                        :ipfsHashes="[nft.image, nft.animation_url, nft.metadata]"
+                        @change="handleAction"
+                        />
+                      </IndexerGuard>
                     </p>
                   </div>
                 </div>
@@ -168,7 +170,8 @@ import { exist } from './Search/exist';
     Appreciation: () => import('./Appreciation.vue'),
     MediaResolver: () => import('../Media/MediaResolver.vue'),
     // PackSaver: () => import('../Pack/PackSaver.vue'),
-    BaseCommentSection: () => import('@/components/subsocial/BaseCommentSection.vue')
+    BaseCommentSection: () => import('@/components/subsocial/BaseCommentSection.vue'),
+    IndexerGuard: () => import('@/components/shared/wrapper/IndexerGuard.vue')
   }
 })
 export default class GalleryItem extends Vue {

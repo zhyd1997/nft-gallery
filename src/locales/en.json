@@ -264,7 +264,8 @@
   },
   "general": {
     "balance": "Balance",
-    "submit": "Submit"
+    "submit": "Submit",
+    "indexerReadOnly": "App is in read only mode, try reload app or visit Discord"
   },
   "action": {
     "SEND": "Send",
