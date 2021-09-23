@@ -1,12 +1,11 @@
-import { ClassData, TokenData } from './types';
-
 type Id = string | number;
 
 export enum NFTAction {
-  SEND = 'SEND',
-  CONSUME = 'CONSUME',
-  BUY = 'BUY',
-  LIST = 'LIST',
+  SEND='SEND',
+  CONSUME='CONSUME',
+  BUY='BUY',
+  LIST='LIST',
+  NONE='',
 }
 
 export const actionResolver: Record<NFTAction, [string, string]> = {
@@ -14,6 +13,7 @@ export const actionResolver: Record<NFTAction, [string, string]> = {
   CONSUME: ['nft','burn'],
   BUY: ['marketplace','buy'],
   LIST: ['marketplace', 'setPrice'],
+  '': ['',''],
 };
 
 class NFTUtils {

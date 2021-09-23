@@ -4,9 +4,7 @@ import { expect } from 'chai';
 import { KeyringPair } from '@polkadot/keyring/types';
 import basilisk from '@/components/nft/basilisk';
 import NFTUtils, { NFTAction } from '@/components/bsx/NftUtils';
-import { txCb } from '@/utils/transactionExecutor';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
-import { AnyTuple } from '@polkadot/types/types';
 
 const WS_URL = 'ws://127.0.0.1:9988';
 const CANARY_IPFS =
@@ -29,7 +27,7 @@ describe('Basilisk NFT pallet', (): void => {
 
   it.skip('can connect', async () => {
     const { chainSS58, chainDecimals, chainTokens } = api.registry;
-    expect(chainSS58).to.be.equal(1041);
+    expect(chainSS58).to.be.equal(10041);
     expect(chainDecimals[0]).to.be.equal(12);
     expect(chainTokens[0]).to.be.equal('BSX');
   });
@@ -48,7 +46,7 @@ describe('Basilisk NFT pallet', (): void => {
 
   const getApiCall = (args: [string, string]) => {
     const [section, method] = args;
-    expect(api.tx[section]).not.to.be.undefined;
+    // expect(api.tx[section]).not.to.be.undefined;
     expect(api.tx[section][method]).to.be.a('function');
     return api.tx[section][method];
   }

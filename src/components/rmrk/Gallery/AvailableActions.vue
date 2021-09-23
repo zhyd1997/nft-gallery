@@ -32,10 +32,10 @@ import RmrkVersionMixin from '@/utils/mixins/rmrkVersionMixin';
 import shouldUpdate from '@/utils/shouldUpdate';
 import nftById from '@/queries/nftById.graphql';
 import Null from '@/params/components/Null.vue';
+import NFTUtils, { NFTAction } from '@/components/bsx/NftUtils';
 
-const ownerActions = ['SEND', 'CONSUME', 'DELEGATE', 'FREEZE'];
-const buyActions: string[] = [];
-const delegatorActions: string[] = ['SEND'];
+const ownerActions: NFTAction[] = [NFTAction.SEND, NFTAction.CONSUME, NFTAction.LIST];
+const buyActions: NFTAction[] = [NFTAction.BUY];
 
 const needMeta: Record<string, string> = {
   SEND: 'AddressInput',
@@ -46,9 +46,8 @@ type DescriptionTuple = [string, string] | [string];
 const iconResolver: Record<string, DescriptionTuple> = {
   SEND: ['is-info is-dark'],
   CONSUME: ['is-danger'],
-  DELEGATE: ['is-light'],
-  BUY: ['is-success is-dark'],
-  FREEZE: ['is-warning is-dark'],
+  LIST: ['is-light'],
+  BUY: ['is-success is-dark']
 };
 
 const actionResolver: Record<string, [string, string]> = {
@@ -79,21 +78,17 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
   @Prop(String) public collectionId!: string;
   @Prop(Boolean) public frozen!: boolean;
   @Prop({ type: Array, default: () => [] }) public ipfsHashes!: string[];
-  private selectedAction: Action = '';
+  private selectedAction: NFTAction = NFTAction.NONE;
   private meta: string | number = '';
   protected isLoading: boolean = false;
   protected status = ''
 
-  get actions() {
-    if (this.isOwner) {
-      return ownerActions;
-    }
-
-    if (this.isDelegator) {
-      return delegatorActions;
-    }
-
-    return [];
+ get actions() {
+    return this.isOwner
+      ? ownerActions
+      : this.isAvailableToBuy
+      ? buyActions
+      : [];
   }
 
   get showSubmit() {
@@ -116,11 +111,11 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
     return iconResolver[value];
   }
 
-  protected handleAction(action: Action) {
+  protected handleAction(action: NFTAction) {
     if (shouldUpdate(action,  this.selectedAction)) {
       this.selectedAction = action;
     } else {
-      this.selectedAction = '';
+      this.selectedAction = NFTAction.NONE;
       this.meta = '';
     }
   }
@@ -152,7 +147,7 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
     return accountId && Number(price) > 0;
   }
 
-  private handleSelect(value: Action) {
+  private handleSelect(value: NFTAction) {
     this.selectedAction = value;
     this.meta = '';
   }
@@ -164,18 +159,15 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
     }`;
   }
 
-  get isFreeze() {
-    return this.selectedAction === 'FREEZE';
+  get isBuy() {
+    return this.selectedAction === 'BUY';
   }
-
   get isConsume() {
     return this.selectedAction === 'CONSUME';
   }
-
-  get isDelegate() {
-    return this.selectedAction === 'DELEGATE';
+  get isList() {
+    return this.selectedAction === 'LIST';
   }
-
   get isSend() {
     return this.selectedAction === 'SEND';
   }
@@ -212,7 +204,7 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
     try {
       showNotification(`[${this.selectedAction}] ${this.nftId}`);
 
-      const action = actionResolver[this.selectedAction];
+      const action = NFTUtils.apiCall(this.selectedAction);
       if (!action || !this.collectionId) {
         throw new EvalError('Action or Collection not found');
       }
@@ -225,7 +217,10 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
       const tx = await exec(this.accountId, '', cb, arg, txCb(
         async (blockHash) => {
           execResultValue(tx);
-          showNotification(blockHash.toString(), notificationTypes.info);
+          const header = await api.rpc.chain.getHeader(blockHash);
+          const blockNumber = header.number.toString();
+
+          showNotification(`[NFT] ${this.selectedAction} processed in block ${blockNumber}`, notificationTypes.info);
           if (this.isConsume) {
             this.unpinNFT();
           }
@@ -234,13 +229,13 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
             `[${this.selectedAction}] ${this.nftId}`,
             notificationTypes.success
           );
-          this.selectedAction = '';
+          this.selectedAction = NFTAction.NONE;
           this.isLoading = false;
         },
         err => {
           execResultValue(tx);
           showNotification(`[ERR] ${err.hash}`, notificationTypes.danger);
-          this.selectedAction = '';
+          this.selectedAction = NFTAction.NONE;
           this.isLoading = false;
         },
         res => {
@@ -270,20 +265,9 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
     }
   }
   getArgs() {
-    const { selectedAction } = this;
+    const { selectedAction, collectionId, nftId, accountId, meta } = this;
 
-    switch (selectedAction) {
-      case 'FREEZE':
-        throw [this.collectionId, this.nftId];
-      case 'CONSUME':
-        return [this.collectionId, this.nftId, this.accountId];
-      case 'DELEGATE':
-        return [this.collectionId, this.nftId, this.meta];
-      case 'SEND':
-        return [this.collectionId, this.nftId, this.meta];
-      default:
-        throw new Error('Action not found');
-    }
+    return NFTUtils.getActionParams(selectedAction, collectionId, nftId, NFTUtils.correctMeta(selectedAction, String(meta), accountId));
   }
 
   protected unpinNFT() {

@@ -239,6 +239,35 @@ export default class CreateToken extends Mixins(
     return [];
   }
 
+  protected createApiCall() {
+    const { api } = Connector.getInstance();
+
+    if (this.nft.price || this.nft.edition > 1) {
+      return api.tx.utility.batchAll
+    }
+
+    return api.tx.nft.mint
+  }
+
+  protected createApiParams(metadata: string) {
+    const { api } = Connector.getInstance();
+    const { id, alreadyMinted } = this.selectedCollection!;
+
+    const args = NFTUtils.createNFT(id, alreadyMinted, this.accountId, 0, metadata)
+
+    if (!this.nft.price) {
+      return args;
+    }
+
+    const calls = [api.tx.nft.mint(...args)];
+
+    if (this.nft.price) {
+      calls.push(api.tx.markteplace.setPrice(id, alreadyMinted, this.nft.price));
+    }
+
+    return [calls];
+  }
+
   protected async submit() {
     if (!this.selectedCollection) {
       throw ReferenceError('[MINT] Unable to mint without collection');
@@ -247,19 +276,18 @@ export default class CreateToken extends Mixins(
     this.isLoading = true;
     this.status = 'loader.ipfs';
     const { api } = Connector.getInstance();
-    const { id, alreadyMinted } = this.selectedCollection
 
     try {
       // const metadata = await this.constructMeta();
       const metadata = 'ipfs://ipfs/QmaCWgK91teVsQuwLDt56m2xaUfBCCJLeCsPeJyHEenoES'
       // missin possibility to handle more than one remark
 
-      const cb = api.tx.nft.mint
+      const cb = this.createApiCall();
 
       // do not rely on alreadyMinted, it is not always accurate
       // do not rely subscribe to the collection, it is not always accurate
       // DEV: fetch nft ids from the collection, and reccomend next id
-      const args = NFTUtils.createNFT(id, alreadyMinted, this.accountId, 0, metadata)
+      const args = this.createApiParams(metadata);
 
 
       const tx = await exec(
@@ -274,7 +302,7 @@ export default class CreateToken extends Mixins(
             const blockNumber = header.number.toString();
 
             showNotification(
-              `[NFT] Saved ${this.nft.edition} entries in block ${blockNumber}`,
+              `[NFT] Saved ${this.nft.name} in block ${blockNumber}`,
               notificationTypes.success
             );
 

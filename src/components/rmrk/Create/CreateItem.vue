@@ -57,19 +57,6 @@
     </b-field>
 
     <BalanceInput @input="updateMeta" label="Price" />
-    <b-message
-      v-if="hasPrice"
-      icon="exclamation-triangle"
-      class="mt-3 has-text-primary"
-      title="Additional transaction"
-      type="is-primary"
-      has-icon
-      aria-close-label="Close message"
-    >
-      <span class="has-text-primary"
-        >Setting the price now requires making an additional transaction.</span
-      >
-    </b-message>
   </div>
 </template>
 
