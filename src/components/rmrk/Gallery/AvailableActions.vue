@@ -39,7 +39,7 @@ const buyActions: NFTAction[] = [NFTAction.BUY];
 
 const needMeta: Record<string, string> = {
   SEND: 'AddressInput',
-  DELEGATE: 'AddressInput',
+  LIST: 'BalanceInput'
 };
 
 type DescriptionTuple = [string, string] | [string];
@@ -65,6 +65,7 @@ type Action = 'SEND' | 'CONSUME' | 'FREEZE' | 'DELEGATE' | '';
 
 const components = {
   AddressInput: () => import('@/components/shared/AddressInput.vue'),
+  BalanceInput: () => import('@/components/shared/BalanceInput.vue'),
   Loader: () => import('@/components/shared/Loader.vue')
 };
 
@@ -265,9 +266,9 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
     }
   }
   getArgs() {
-    const { selectedAction, collectionId, nftId, accountId, meta } = this;
+    const { selectedAction, collectionId, nftId, currentOwnerId, meta } = this;
 
-    return NFTUtils.getActionParams(selectedAction, collectionId, nftId, NFTUtils.correctMeta(selectedAction, String(meta), accountId));
+    return NFTUtils.getActionParams(selectedAction, collectionId, nftId, NFTUtils.correctMeta(selectedAction, String(meta), currentOwnerId));
   }
 
   protected unpinNFT() {

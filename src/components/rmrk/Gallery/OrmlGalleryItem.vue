@@ -188,7 +188,7 @@ import { get, set } from 'idb-keyval';
 import { MediaType } from '../types';
 import axios from 'axios';
 import Connector from '@vue-polkadot/vue-api';
-import { InstanceDetails, InstanceMetadata } from '@polkadot/types/interfaces';
+import { BalanceOf, InstanceDetails, InstanceMetadata } from '@polkadot/types/interfaces';
 import SubscribeMixin from '@/utils/mixins/subscribeMixin';
 import nftById from '@/queries/bsx/nftById.graphql';
 import { createTokenId } from '@/components/nft/utils';
@@ -249,7 +249,6 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
   public meta: NFTMetadata = emptyObject<NFTMetadata>();
   public message: string = '';
   protected itemId: string = '';
-  public royalty: string = '';
 
   get accountId() {
     return this.$store.getters.getAuthAddress;
@@ -266,7 +265,19 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
         [this.id, this.itemId],
         this.observeOwner
       );
+      this.subscribe(
+        api.query.marketplace.tokenPrices,
+        [this.id, this.itemId],
+        this.observePrice
+      );
     }, 1000);
+  }
+
+  observePrice(data: Option<BalanceOf>) {
+    const instance = data.unwrapOr(null);
+    console.log('observePrice', instance?.toHuman());
+    this.$set(this.nft, 'price', instance?.toString());
+
   }
 
   protected observeOwner(data: Option<InstanceDetails>) {
@@ -412,6 +423,10 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
 
   get hasPrice() {
     return true;
+  }
+
+  get royalty() {
+    return this.nft?.attributes?.find((e: any) => e.key === 'royalty')?.value;
   }
 
   get attributes() {
