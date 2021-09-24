@@ -115,7 +115,7 @@
             </div>
             <div class="label">{{ $t("price") }}</div>
             <div class="subtitle is-size-6" v-if="royalty">
-              ⊃ royalty <b><Money :value="royalty" inline/></b>
+              ⊃ royalty <b><Percent :value="royalty" inline/></b>
             </div>
           </div>
 
@@ -229,6 +229,7 @@ import { createTokenId } from '@/components/nft/utils';
     AvailableActions: () => import('./AvailableActions.vue'),
     Facts: () => import('@/components/rmrk/Gallery/Item/Facts.vue'),
     Money: () => import('@/components/shared/format/Money.vue'),
+    Percent: () => import('@/components/shared/format/Percent.vue'),
     Name: () => import('@/components/rmrk/Gallery/Item/Name.vue'),
     Sharing: () => import('@/components/rmrk/Gallery/Item/Sharing.vue'),
     Appreciation: () => import('./Appreciation.vue'),
@@ -275,9 +276,7 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
 
   observePrice(data: Option<BalanceOf>) {
     const instance = data.unwrapOr(null);
-    console.log('observePrice', instance?.toHuman());
     this.$set(this.nft, 'price', instance?.toString());
-
   }
 
   protected observeOwner(data: Option<InstanceDetails>) {

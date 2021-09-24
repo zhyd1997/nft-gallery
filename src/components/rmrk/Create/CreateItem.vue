@@ -57,6 +57,16 @@
     </b-field>
 
     <BalanceInput @input="updateMeta" label="Price" />
+    <b-field grouped :label="$i18n.t('royalty')">
+      <b-numberinput
+        v-model="vRoyalty"
+        placeholder="Percent you get from each secondary sale"
+        expanded
+        :min="1"
+        :max="99"
+      ></b-numberinput>
+      <Tooltip iconsize="is-medium" :label="$i18n.t('tooltip.edition')" />
+    </b-field>
   </div>
 </template>
 
@@ -72,6 +82,7 @@ import { MediaType } from '../types';
     BalanceInput: () => import('@/components/shared/BalanceInput.vue'),
     MetadataUpload: () => import('./DropUpload.vue'),
     Tooltip: () => import('@/components/shared/Tooltip.vue'),
+    RoyaltyInput: () => import('@/components/shared/inputs/NumberInput.vue'),
   }
 })
 export default class CreateItem extends Vue {
@@ -83,6 +94,7 @@ export default class CreateItem extends Vue {
   @PropSync('tags', { type: Array }) vTags!: Attribute[];
   @PropSync('file', { type: Blob }) vFile!: Blob | null;
   @PropSync('secondFile', { type: Blob }) vSecondFile!: Blob | null;
+  @PropSync('royalty', { type: [Number, String] }) vRoyalty!: string | number;
 
 
   @Prop(Number) public max!: number;

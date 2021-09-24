@@ -154,7 +154,8 @@ export default class CreateToken extends Mixins(
     nsfw: false,
     price: 0,
     file: undefined,
-    secondFile: undefined
+    secondFile: undefined,
+    royalty: 0,
   };
   protected collections: MintedCollection[] = [];
   private selectedCollection: MintedCollection | null = null;
@@ -253,7 +254,7 @@ export default class CreateToken extends Mixins(
     const { api } = Connector.getInstance();
     const { id, alreadyMinted } = this.selectedCollection!;
 
-    const args = NFTUtils.createNFT(id, alreadyMinted, this.accountId, 0, metadata)
+    const args = NFTUtils.createNFT(id, alreadyMinted, this.accountId, this.nft.royalty, metadata)
 
     if (!this.nft.price) {
       return args;

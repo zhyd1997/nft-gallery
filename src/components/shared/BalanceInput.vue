@@ -1,20 +1,33 @@
 <template>
-  <div class="arguments-wrapper">
-    <b-field :label="$t(label)" class="balance">
-      <b-input v-model="inputValue" @input="handleInput" type="number" step="0.001" min="0"/>
-      <p class="control balance">
-        <b-select :disabled="!calculate" v-model="selectedUnit" @input="handleInput">
-          <option v-for="u in units" v-bind:key="u.value" v-bind:value="u.value">
-            {{ u.name }}
-          </option>
-        </b-select>
-      </p>
-    </b-field>
-  </div>
+  <b-field :label="$t(label)" class="balance">
+    <b-input
+      v-model="inputValue"
+      @input="handleInput"
+      type="number"
+      step="0.001"
+      min="0"
+    />
+    <p class="control balance">
+      <b-select
+        :disabled="!calculate"
+        v-model="selectedUnit"
+        @input="handleInput"
+      >
+        <option v-for="u in units" v-bind:key="u.value" v-bind:value="u.value">
+          {{ u.name }}
+        </option>
+      </b-select>
+    </p>
+  </b-field>
 </template>
 
 <script lang="ts" >
-import { Component, Prop, Vue, Watch, Emit, Mixins } from 'vue-property-decorator';
+import {
+  Component,
+  Prop,
+  Emit,
+  Mixins
+} from 'vue-property-decorator';
 import Balance from '@/params/components/Balance.vue';
 import { units as defaultUnits } from '@/params/constants';
 import { Unit } from '@/params/types';
@@ -22,11 +35,11 @@ import shouldUpdate from '@/utils/shouldUpdate';
 import { Debounce } from 'vue-debounce-decorator';
 import ChainMixin from '@/utils/mixins/chainMixin';
 
-const components = { Balance }
+const components = { Balance };
 
 type BalanceType = {
   balance: number;
-}
+};
 
 @Component({ components })
 export default class BalanceInput extends Mixins(ChainMixin) {
@@ -45,18 +58,18 @@ export default class BalanceInput extends Mixins(ChainMixin) {
   }
 
   formatSelectedValue(value: number): number {
-    return  value * (10**this.decimals) * this.selectedUnit
+    return value * 10 ** this.decimals * this.selectedUnit;
   }
 
   get calculatedBalance() {
-    return this.formatSelectedValue(this.inputValue)
+    return this.formatSelectedValue(this.inputValue);
   }
 
   protected mapper(unit: Unit) {
     if (unit.name === '-') {
-      return { ...unit, name: this.unit }
+      return { ...unit, name: this.unit };
     }
-    return unit
+    return unit;
   }
 
   public mounted() {
