@@ -1,12 +1,8 @@
 <template>
   <component :is="is">
     <template v-if="profileMode">
-<<<<<<< HEAD
-      <router-link :to="{ name: route, params: params }" :tag="tag">
-=======
       <slot name="extra" />
-      <router-link :to="{ name: route, params: { id: param } }" :tag="tag">
->>>>>>> origin/main
+      <router-link :to="{ name: route, params: params }" :tag="tag">
         <slot />
       </router-link>
     </template>

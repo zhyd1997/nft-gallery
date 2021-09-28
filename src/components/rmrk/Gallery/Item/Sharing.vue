@@ -259,13 +259,9 @@ export default class Sharing extends Vue {
   @import "@/styles/variables";
 
 .share {
-<<<<<<< HEAD
-  box-shadow: 0px 0px 5px 0.5px $primary;
-=======
   border-radius: 0;
   box-shadow: none;
   border: 2px solid $primary;
->>>>>>> origin/main
 
   .card-footer {
     border: none;
