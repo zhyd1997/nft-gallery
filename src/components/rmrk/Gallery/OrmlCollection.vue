@@ -1,11 +1,17 @@
 <template>
-  <div class="pack-item-wrapper container">
+    <div class="pack-item-wrapper container">
     <div class="columns is-centered">
       <div class="column is-half has-text-centered">
-        <figure class="image container is-128x128">
-          <img class="is-rounded" :src="image">
-        </figure>
-        <h1 class="title is-2 mt-2">
+        <div class="container image is-128x128 mb-2">
+          <b-image
+            v-if="!isLoading"
+            :src="image"
+            :alt="name"
+            ratio="1by1"
+            rounded
+          ></b-image>
+        </div>
+        <h1 class="title is-2">
           {{ name }}
         </h1>
       </div>
@@ -13,12 +19,20 @@
 
     <div class="columns">
       <div class="column">
-        <p class="subtitle">
-          Creator <ProfileLink :address="issuer" :inline="true" :showTwitter="true"/>
-        </p>
-        <p class="subtitle" v-if="owner">
-          Owner <ProfileLink :address="owner" :inline="true" />
-        </p>
+        <div class="label">
+          {{ $t('creator') }}
+        </div>
+        <div class="subtitle is-size-6">
+          <ProfileLink :address="issuer" :inline="true" :showTwitter="true"/>
+        </div>
+      </div>
+      <div class="column" v-if="owner">
+        <div class="label">
+          {{ $t('owner') }}
+        </div>
+        <div class="subtitle">
+          <ProfileLink :address="owner" :inline="true" />
+        </div>
       </div>
       <div class="column is-2">
         <Sharing v-if="sharingVisible"
@@ -30,7 +44,7 @@
     <div class="columns is-centered">
       <div class="column is-8 has-text-centered">
         <p class="content">
-          {{ description }}
+          <VueMarkdown :source="description" />
           <CollapseWrapper v-if="attributes && attributes.length" visible="attribute.show" hidden="attribute.hide">
             <div v-for="(attr, index) in attributes" :key="index">
               <span class="text-bold">{{ attr.key }}: </span><span>{{ attr.value }}</span>
@@ -67,10 +81,10 @@ import { CollectionMetadata } from '@/components/rmrk/service/scheme';
 import { tokenIdToRoute } from '@/components/nft/utils';
 
 const components = {
-  GalleryCardList: () =>
-    import('@/components/rmrk/Gallery/GalleryCardList.vue'),
+  GalleryCardList: () => import('@/components/rmrk/Gallery/GalleryCardList.vue'),
   Sharing: () => import('@/components/rmrk/Gallery/Item/Sharing.vue'),
   ProfileLink: () => import('@/components/rmrk/Profile/ProfileLink.vue'),
+  VueMarkdown: () => import('vue-markdown-render'),
   CollapseWrapper: () => import('@/components/shared/collapse/CollapseWrapper.vue'),
 };
 

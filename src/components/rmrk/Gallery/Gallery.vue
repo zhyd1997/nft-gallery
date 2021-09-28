@@ -11,7 +11,7 @@
 
     <div>
       <div class="columns is-multiline">
-        <div class="column is-4" v-for="nft in results" :key="nft.id">
+        <div class="column is-4" v-for="nft in results" :key="nft.key">
           <div class="card nft-card">
             <router-link
               :to="{ name: 'superDetail', params: { id: nft.collectionId, item: nft.id } }"
@@ -204,6 +204,7 @@ export default class Gallery extends Vue {
     this.total = data.nFTEntities.totalCount;
     this.nfts = data.nFTEntities.nodes.map((e: any) => ({
       ...e,
+      key: e.id,
       id: e.id.split('-')[1],
     }));
 
