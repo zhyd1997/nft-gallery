@@ -1,10 +1,14 @@
 <template>
   <component :is="is">
     <template v-if="profileMode">
+<<<<<<< HEAD
       <router-link :to="{ name: route, params: params }" :tag="tag">
+=======
+      <slot name="extra" />
+      <router-link :to="{ name: route, params: { id: param } }" :tag="tag">
+>>>>>>> origin/main
         <slot />
       </router-link>
-      <slot name="extra" />
     </template>
     <template v-else>
       <a :href="hrefLink" target="_blank" rel="noopener noreferrer">

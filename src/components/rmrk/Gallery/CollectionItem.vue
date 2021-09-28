@@ -19,12 +19,20 @@
 
     <div class="columns">
       <div class="column">
-        <p class="subtitle">
-          Creator <ProfileLink :address="issuer" :inline="true" :showTwitter="true"/>
-        </p>
-        <p class="subtitle" v-if="owner">
-          Owner <ProfileLink :address="owner" :inline="true" />
-        </p>
+        <div class="label">
+          {{ $t('creator') }}
+        </div>
+        <div class="subtitle is-size-6">
+          <ProfileLink :address="issuer" :inline="true" :showTwitter="true"/>
+        </div>
+      </div>
+      <div class="column" v-if="owner">
+        <div class="label">
+          {{ $t('owner') }}
+        </div>
+        <div class="subtitle">
+          <ProfileLink :address="owner" :inline="true" />
+        </div>
       </div>
       <div class="column is-2">
         <Sharing v-if="sharingVisible"
@@ -37,9 +45,7 @@
 
     <div class="columns is-centered">
       <div class="column is-8 has-text-centered">
-        <p class="content">
-          {{ description }}
-        </p>
+        <VueMarkdown :source="description" />
       </div>
     </div>
 
@@ -62,6 +68,7 @@ const components = {
   CollectionActivity: () => import('@/components/rmrk/Gallery/CollectionActivity.vue'),
   Sharing: () => import('@/components/rmrk/Gallery/Item/Sharing.vue'),
   ProfileLink: () => import('@/components/rmrk/Profile/ProfileLink.vue'),
+  VueMarkdown: () => import('vue-markdown-render')
 };
 @Component<CollectionItem>({
   metaInfo() {

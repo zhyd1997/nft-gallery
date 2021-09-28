@@ -1,9 +1,9 @@
 <template>
   <div class="profile-wrapper container">
-    <div class="columns">
+    <div class="is-flex is-align-items-center container-mobile">
       <div class="column">
-        <div class="columns">
-          <div class="column title">
+        <div class="columns is-align-items-center">
+          <div class="column title column-mobile">
             <b-icon pack="fas" icon="ghost"></b-icon>
             <a
               :href="`https://kusama.subscan.io/account/${id}`"
@@ -13,7 +13,10 @@
               <Identity ref="identity" :address="id" inline emit @change="handleIdentity" />
             </a>
           </div>
-          <div class="column">
+          <div class="column-mobile">
+            <DonationButton :address="id" />
+          </div>
+          <div class="column column-mobile">
             <OnChainProperty
               v-bind:email="email"
               v-bind:twitter="twitter"
@@ -24,7 +27,7 @@
           </div>
         </div>
       </div>
-      <div class="column is-2">
+      <div class="column is-2 mb-5 share-mobile ">
         <Sharing
           v-if="!sharingVisible"
           label="Check this awesome Profile on %23KusamaNetwork %23KodaDot"
@@ -51,30 +54,6 @@
           :account="id"
         />
       </b-tab-item>
-      <b-tab-item value="collected">
-        <template #header>
-          {{ $t("profile.collected") }}
-          <span class="tab-counter" v-if="totalCollected">{{ totalCollected }}</span>
-        </template>
-        <PaginatedCardList
-          :id="id"
-          :query="nftListCollected"
-          @change="totalCollected = $event"
-          :account="id"
-        />
-      </b-tab-item>
-      <b-tab-item value="sold">
-        <template #header>
-          {{ $t("profile.sold") }}
-          <span class="tab-counter" v-if="totalSold">{{ totalSold }}</span>
-        </template>
-        <PaginatedCardList
-          :id="id"
-          :query="nftListSold"
-          @change="totalSold = $event"
-          :account="id"
-        />
-      </b-tab-item>
       <b-tab-item
         :label="`Collections - ${totalCollections}`"
         value="collection"
@@ -89,6 +68,30 @@
           class="pt-5 pb-5"
           :total="totalCollections"
           v-model="currentCollectionPage"
+        />
+      </b-tab-item>
+      <b-tab-item value="sold">
+        <template #header>
+          {{ $t("profile.sold") }}
+          <span class="tab-counter" v-if="totalSold">{{ totalSold }}</span>
+        </template>
+        <PaginatedCardList
+          :id="id"
+          :query="nftListSold"
+          @change="totalSold = $event"
+          :account="id"
+        />
+      </b-tab-item>
+      <b-tab-item value="collected">
+        <template #header>
+          {{ $t("profile.collected") }}
+          <span class="tab-counter" v-if="totalCollected">{{ totalCollected }}</span>
+        </template>
+        <PaginatedCardList
+          :id="id"
+          :query="nftListCollected"
+          @change="totalCollected = $event"
+          :account="id"
         />
       </b-tab-item>
 
@@ -127,7 +130,9 @@ const components = {
   Pagination: () => import('@/components/rmrk/Gallery/Pagination.vue'),
   OnChainProperty: () => import('@/views/OnChainProperty.vue'),
   PaginatedCardList: () =>
-    import('@/components/rmrk/Gallery/PaginatedCardList.vue')
+    import('@/components/rmrk/Gallery/PaginatedCardList.vue'),
+  DonationButton: () => import('@/components/transfer/DonationButton.vue'),
+
 };
 
 const eq = (tab: string) => (el: string) => tab === el;
@@ -349,5 +354,26 @@ export default class Profile extends Vue {
 .tab-counter::before {
   content: " - ";
   white-space: pre;
+}
+
+.title {
+  flex-grow: 0;
+  flex-basis: auto;
+}
+
+@media only screen and (max-width: 768px) {
+  .column-mobile {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+
+  .container-mobile {
+    flex-direction: column;
+  }
+
+  .share-mobile {
+    width: 100%;
+  }
 }
 </style>
