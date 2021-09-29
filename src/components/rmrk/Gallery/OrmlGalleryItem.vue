@@ -333,7 +333,6 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
         ...nft,
         ...nftData,
         collectionId: this.id,
-        issuer: ''
       };
     } catch (e) {
       showNotification(`${e}`, notificationTypes.warn);

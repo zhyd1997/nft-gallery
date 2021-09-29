@@ -105,7 +105,7 @@ import { generateId } from '@/components/rmrk/service/Consolidator';
 import { supportTx, calculateCost } from '@/utils/support';
 import NFTUtils from '@/components/bsx/NftUtils'
 import TransactionMixin from '@/utils/mixins/txMixin';
-import { version } from 'echarts';
+import existingCollectionList from '@/queries/bsx/existingCollectionList.graphql'
 
 const components = {
   Auth: () => import('@/components/shared/Auth.vue'),
@@ -181,6 +181,28 @@ export default class CreateCollection extends Mixins(
     return [];
   }
 
+  protected async generateNewCollectionId(): Promise<number> {
+    const [...randomNumbers] = window.crypto.getRandomValues(new Uint32Array(10));
+    const cols = this.$apollo.query({
+      query: existingCollectionList,
+      variables: {
+        ids: randomNumbers.map(String)
+      },
+    })
+
+    const {
+      data: {
+        collectionEntities: {
+          nodes: collectionList
+        }
+      }
+    } = await cols;
+
+    const existingIds = collectionList.map(({ id }: {id: string}) => id);
+    const newId = randomNumbers.find((id) => !existingIds.includes(id));
+    return Number(newId);
+  }
+
   protected async submit() {
     this.isLoading = true;
     this.status = 'loader.ipfs';
@@ -194,8 +216,7 @@ export default class CreateCollection extends Mixins(
       const { api } = Connector.getInstance();
       const cb = api.tx.nft.createClass
 
-      // check available tokenID
-      const [randomId] = window.crypto.getRandomValues(new Uint32Array(1))
+      const randomId = await this.generateNewCollectionId();
 
       const args = NFTUtils.createCollection(randomId, this.accountId, metadata);
       const tx = await exec(
@@ -245,5 +266,10 @@ export default class CreateCollection extends Mixins(
       this.isLoading = false;
     }
   }
+
 }
 </script>
+
+
+
+
