@@ -244,14 +244,14 @@ export const computeAndUpdateCollection = (collection: Collection): Collection =
   }
 }
 
-export const mergeCollection = (collection: Collection, metadata: CollectionMetadata, shouldSanitize: boolean = false): CollectionWithMeta => ({
+export const mergeCollection = (collection: Collection, metadata: CollectionMetadata, shouldSanitize = false): CollectionWithMeta => ({
   ...collection,
   ...metadata,
   image: shouldSanitize ? sanitizeIpfsUrl(metadata.image || '') : metadata.image
 })
 
 
-export const mergeNFT = (nft: NFT, metadata: NFTMetadata, shouldSanitize: boolean = false): NFTWithMeta => ({
+export const mergeNFT = (nft: NFT, metadata: NFTMetadata, shouldSanitize = false): NFTWithMeta => ({
   ...nft,
   ...metadata,
   image: shouldSanitize ? sanitizeIpfsUrl(metadata.image || '') : metadata.image

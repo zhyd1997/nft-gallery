@@ -40,7 +40,7 @@ const buyActions: NFTAction[] = [NFTAction.BUY];
 const needMeta: Record<string, string> = {
   SEND: 'AddressInput',
   LIST: 'BalanceInput'
-};
+}
 
 type DescriptionTuple = [string, string] | [string];
 const iconResolver: Record<string, DescriptionTuple> = {
@@ -48,7 +48,7 @@ const iconResolver: Record<string, DescriptionTuple> = {
   CONSUME: ['is-danger'],
   LIST: ['is-light'],
   BUY: ['is-success is-dark']
-};
+}
 
 const actionResolver: Record<string, [string, string]> = {
   SEND: ['uniques','transfer'],
@@ -67,7 +67,7 @@ const components = {
   AddressInput: () => import('@/components/shared/AddressInput.vue'),
   BalanceInput: () => import('@/components/shared/BalanceInput.vue'),
   Loader: () => import('@/components/shared/Loader.vue')
-};
+}
 
 @Component({ components })
 export default class AvailableActions extends Mixins(RmrkVersionMixin) {
@@ -81,40 +81,40 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
   @Prop({ type: Array, default: () => [] }) public ipfsHashes!: string[];
   private selectedAction: NFTAction = NFTAction.NONE;
   private meta: string | number = '';
-  protected isLoading: boolean = false;
+  protected isLoading = false;
   protected status = ''
 
  get actions() {
     return this.isOwner
       ? ownerActions
       : this.isAvailableToBuy
-      ? buyActions
-      : [];
+        ? buyActions
+        : []
   }
 
   get showSubmit() {
-    return this.selectedAction && (!this.showMeta || this.metaValid);
+    return this.selectedAction && (!this.showMeta || this.metaValid)
   }
 
   get metaValid() {
     if (typeof this.meta === 'number') {
-      return this.meta >= 0;
+      return this.meta >= 0
     }
 
-    return this.meta;
+    return this.meta
   }
 
   get showMeta() {
-    return needMeta[this.selectedAction];
+    return needMeta[this.selectedAction]
   }
 
   protected iconType(value: string) {
-    return iconResolver[value];
+    return iconResolver[value]
   }
 
   protected handleAction(action: NFTAction) {
     if (shouldUpdate(action,  this.selectedAction)) {
-      this.selectedAction = action;
+      this.selectedAction = action
     } else {
       this.selectedAction = NFTAction.NONE;
       this.meta = '';
@@ -134,18 +134,18 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
       '{ currentOwnerId, accountId }',
       this.currentOwnerId,
       this.accountId
-    );
+    )
 
     return (
       this.currentOwnerId &&
       this.accountId &&
       this.currentOwnerId === this.accountId
-    );
+    )
   }
 
   get isAvailableToBuy() {
-    const { price, accountId } = this;
-    return accountId && Number(price) > 0;
+    const { price, accountId } = this
+    return accountId && Number(price) > 0
   }
 
   private handleSelect(value: NFTAction) {
@@ -154,47 +154,47 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
   }
 
   private constructRmrk(): string {
-    const { selectedAction, version, meta, nftId } = this;
+    const { selectedAction, version, meta, nftId } = this
     return `RMRK::${selectedAction}::${version}::${nftId}${
       this.metaValid ? '::' + meta : ''
-    }`;
+    }`
   }
 
   get isBuy() {
-    return this.selectedAction === 'BUY';
+    return this.selectedAction === 'BUY'
   }
   get isConsume() {
-    return this.selectedAction === 'CONSUME';
+    return this.selectedAction === 'CONSUME'
   }
   get isList() {
-    return this.selectedAction === 'LIST';
+    return this.selectedAction === 'LIST'
   }
   get isSend() {
-    return this.selectedAction === 'SEND';
+    return this.selectedAction === 'SEND'
   }
 
   protected updateMeta(value: string | number) {
-    console.log(typeof value, value);
-    this.meta = value;
+    console.log(typeof value, value)
+    this.meta = value
   }
 
   protected async checkBuyBeforeSubmit() {
     const nft = await this.$apollo.query({
-        query: nftById,
-        variables: {
-          id: this.nftId
-        },
-      })
+      query: nftById,
+      variables: {
+        id: this.nftId
+      },
+    })
 
-      const { data: {nFTEntity} } = nft;
+    const { data: {nFTEntity} } = nft
 
-      if (nFTEntity.currentOwner !== this.currentOwnerId || nFTEntity.burned || nFTEntity.price === 0 || nFTEntity.price !== this.price ) {
-        showNotification(
-          `[RMRK::${this.selectedAction}] Owner changed or NFT does not exist`,
-          notificationTypes.warn
-        );
-        throw new ReferenceError('NFT has changed')
-      }
+    if (nFTEntity.currentOwner !== this.currentOwnerId || nFTEntity.burned || nFTEntity.price === 0 || nFTEntity.price !== this.price ) {
+      showNotification(
+        `[RMRK::${this.selectedAction}] Owner changed or NFT does not exist`,
+        notificationTypes.warn
+      )
+      throw new ReferenceError('NFT has changed')
+    }
 
   }
 
@@ -223,7 +223,7 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
 
           showNotification(`[NFT] ${this.selectedAction} processed in block ${blockNumber}`, notificationTypes.info);
           if (this.isConsume) {
-            this.unpinNFT();
+            this.unpinNFT()
           }
 
           showNotification(
@@ -242,27 +242,27 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
         res => {
           if (res.status.isReady) {
             this.status = 'loader.casting'
-            return;
+            return
           }
 
           if (res.status.isInBlock) {
             this.status = 'loader.block'
-            return;
+            return
           }
 
           if (res.status.isFinalized) {
             this.status = 'loader.finalized'
-            return;
+            return
           }
 
           this.status = ''
         }
-      ));
+      ))
 
     } catch (e) {
-      showNotification(`[ERR] ${e}`, notificationTypes.danger);
-      console.error(e);
-      this.isLoading = false;
+      showNotification(`[ERR] ${e}`, notificationTypes.danger)
+      console.error(e)
+      this.isLoading = false
     }
   }
   getArgs() {
@@ -275,12 +275,12 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
     this.ipfsHashes.forEach(async hash => {
       if (hash) {
         try {
-          await unpin(hash);
+          await unpin(hash)
         } catch (e) {
-          console.warn(`[ACTIONS] Cannot Unpin ${hash} because: ${e}`);
+          console.warn(`[ACTIONS] Cannot Unpin ${hash} because: ${e}`)
         }
       }
-    });
+    })
   }
 
 }

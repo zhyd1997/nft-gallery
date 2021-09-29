@@ -15,9 +15,9 @@
 </template>
 
 <script lang="ts" >
-import { Component, Prop, Vue, Watch, Mixins } from 'vue-property-decorator';
-import InlineMixin from '@/utils/mixins/inlineMixin';
-import isShareMode from '@/utils/isShareMode';
+import { Component, Prop, Vue, Watch, Mixins } from 'vue-property-decorator'
+import InlineMixin from '@/utils/mixins/inlineMixin'
+import isShareMode from '@/utils/isShareMode'
 
 @Component
 export default class LinkResolver extends Mixins(InlineMixin) {
@@ -27,7 +27,7 @@ export default class LinkResolver extends Mixins(InlineMixin) {
   @Prop({ type: [String, Object] }) public param!: string;
 
   get profileMode() {
-    return !isShareMode;
+    return !isShareMode
   }
 
   get params(): object {
@@ -35,7 +35,7 @@ export default class LinkResolver extends Mixins(InlineMixin) {
   }
 
   get hrefLink() {
-    return `${window.location.origin}/${this.link}/${this.param}`;
+    return `${window.location.origin}/${this.link}/${this.param}`
   }
 }
 </script>

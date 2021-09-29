@@ -105,4 +105,4 @@ export const estimate = async (
   return info.partialFee.toString();
 };
 
-export default exec;
+export default exec
