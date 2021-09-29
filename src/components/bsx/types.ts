@@ -1,14 +1,14 @@
-import { AccountId } from '@polkadot/types/interfaces';
+import { AccountId } from '@polkadot/types/interfaces'
 
 export class ClassData {
   // tslint:disable
-  is_pool: boolean = true;
+  is_pool = true;
 }
 
 
 export class TokenData {
-  locked: boolean = false;
-  emote: string = '1F40D';
+  locked = false;
+  emote = '1F40D';
 }
 
 export type ClassInfoOf = {

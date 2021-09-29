@@ -139,7 +139,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import nftListWithSearch from '@/queries/bsx/nftListWithSearch.graphql';
+import nftListWithSearch from '@/queries/bsx/nftListWithSearch.graphql'
 import { denyList } from '@/constants'
 import { getMany, update } from 'idb-keyval'
 import { fetchNFTMetadata } from '../rmrk/utils'

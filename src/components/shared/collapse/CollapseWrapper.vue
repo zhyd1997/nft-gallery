@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator'
 
 @Component
 export default class CollapseWrapper extends Vue {
@@ -25,7 +25,7 @@ export default class CollapseWrapper extends Vue {
   @Prop(Boolean) bottom!: boolean;
 
   get position() {
-    return this.bottom ? 'is-bottom' : 'is-top';
+    return this.bottom ? 'is-bottom' : 'is-top'
   }
 }
 </script>

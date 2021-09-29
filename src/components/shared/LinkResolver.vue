@@ -31,7 +31,7 @@ export default class LinkResolver extends Mixins(InlineMixin) {
   }
 
   get params(): object {
-    return typeof this.param === 'object' ? this.param : { id: this.param };
+    return typeof this.param === 'object' ? this.param : { id: this.param }
   }
 
   get hrefLink() {

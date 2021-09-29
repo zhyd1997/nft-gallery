@@ -65,20 +65,20 @@
 </template>
 
 <script lang="ts" >
-import { emptyObject } from '@/utils/empty';
-import { cast } from '@/utils/cast';
-import { notificationTypes, showNotification } from '@/utils/notification';
-import { Component, Vue } from 'vue-property-decorator';
-import { fetchCollectionMetadata } from '../utils';
-import isShareMode from '@/utils/isShareMode';
+import { emptyObject } from '@/utils/empty'
+import { cast } from '@/utils/cast'
+import { notificationTypes, showNotification } from '@/utils/notification'
+import { Component, Vue } from 'vue-property-decorator'
+import { fetchCollectionMetadata } from '../utils'
+import isShareMode from '@/utils/isShareMode'
 
-import Connector from '@vue-polkadot/vue-api';
-import { Option } from '@polkadot/types';
-import { UniqueCollection as Collection, NFTWithMeta, UniqueAttribute } from '../service/scheme';
-import { ClassMetadata } from '@polkadot/types/interfaces';
-import collectionById from '@/queries/bsx/collectionById.graphql';
-import { CollectionMetadata } from '@/components/rmrk/service/scheme';
-import { tokenIdToRoute } from '@/components/nft/utils';
+import Connector from '@vue-polkadot/vue-api'
+import { Option } from '@polkadot/types'
+import { UniqueCollection as Collection, NFTWithMeta, UniqueAttribute } from '../service/scheme'
+import { ClassMetadata } from '@polkadot/types/interfaces'
+import collectionById from '@/queries/bsx/collectionById.graphql'
+import { CollectionMetadata } from '@/components/rmrk/service/scheme'
+import { tokenIdToRoute } from '@/components/nft/utils'
 
 const components = {
   GalleryCardList: () => import('@/components/rmrk/Gallery/GalleryCardList.vue'),
@@ -86,17 +86,17 @@ const components = {
   ProfileLink: () => import('@/components/rmrk/Profile/ProfileLink.vue'),
   VueMarkdown: () => import('vue-markdown-render'),
   CollapseWrapper: () => import('@/components/shared/collapse/CollapseWrapper.vue'),
-};
+}
 
 @Component<OrmlCollection>({
   components
 })
 export default class OrmlCollection extends Vue {
-  private id: string = '';
+  private id = '';
   private collection: Collection & CollectionMetadata = emptyObject();
   private attributes: UniqueAttribute[] = [];
   private nfts: NFTWithMeta[] = [];
-  private isLoading: boolean = false;
+  private isLoading = false;
   private formater = tokenIdToRoute;
 
   get image() {
@@ -107,7 +107,7 @@ export default class OrmlCollection extends Vue {
     return this.collection.description || ''
   }
 
-	get name() {
+  get name() {
     return this.collection.name || this.id
   }
 
@@ -128,13 +128,13 @@ export default class OrmlCollection extends Vue {
   }
 
   public created() {
-    this.checkId();
-    this.fetchCollection();
+    this.checkId()
+    this.fetchCollection()
     setTimeout(() => {
-      this.loadMagic();
+      this.loadMagic()
       // const { api } = Connector.getInstance();
       // this.subscribe(api.query.uniques.asset, [this.id, this.itemId], this.observeOwner)
-    }, 1000);
+    }, 1000)
   }
 
   private async fetchCollection() {
@@ -143,7 +143,7 @@ export default class OrmlCollection extends Vue {
       variables: {
         id: this.id
       }
-    });
+    })
 
     const {
       data: {
@@ -152,71 +152,71 @@ export default class OrmlCollection extends Vue {
           ...col
         }
       }
-    } = await nfts;
+    } = await nfts
 
-    this.attributes = [...col.attributes || []];
+    this.attributes = [...col.attributes || []]
 
     this.collection = {
       ...this.collection,
       ...col
-    };
+    }
 
-    this.nfts = nftList;
+    this.nfts = nftList
   }
 
   public async loadMagic() {
-    const { api } = Connector.getInstance();
-    await api?.isReady;
+    const { api } = Connector.getInstance()
+    await api?.isReady
 
     try {
       const collectionQ = await api.query.uniques
         .classMetadataOf<Option<ClassMetadata>>(this.id)
-        .then(res => res.unwrapOr(null));
+        .then(res => res.unwrapOr(null))
 
       if (!collectionQ) {
         showNotification(
           `No Collection with ID ${this.id}`,
           notificationTypes.warn
-        );
-        return;
+        )
+        return
       }
 
-      const collectionData = collectionQ.toHuman();
+      const collectionData = collectionQ.toHuman()
 
       if (!collectionData.data) {
         showNotification(
           `No Metadata with ID ${this.id}`,
           notificationTypes.info
-        );
+        )
         // return;
         // not a handicap tho
       }
 
       const collection = await fetchCollectionMetadata({
         metadata: collectionData?.data?.toString()
-      });
+      })
 
       this.collection = {
         ...this.collection,
         ...collection,
         attributes: []
-      };
+      }
     } catch (e) {
-      showNotification(`${e}`, notificationTypes.warn);
-      console.warn(e);
+      showNotification(`${e}`, notificationTypes.warn)
+      console.warn(e)
     }
 
-    this.isLoading = false;
+    this.isLoading = false
   }
 
   public checkId() {
     if (this.$route.params.id) {
-      this.id = this.$route.params.id;
+      this.id = this.$route.params.id
     }
   }
 
   get iframeSettings() {
-    return { width: '100%', height: '100vh' };
+    return { width: '100%', height: '100vh' }
   }
 }
 </script>

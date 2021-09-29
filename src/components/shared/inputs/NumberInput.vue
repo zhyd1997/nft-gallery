@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts" >
-import { Component, Prop, VModel, Vue } from 'vue-property-decorator';
+import { Component, Prop, VModel, Vue } from 'vue-property-decorator'
 
 @Component({})
 export default class NumberInput extends Vue {
@@ -22,15 +22,15 @@ export default class NumberInput extends Vue {
   @Prop({ type: String, default: 'input.slider' }) protected label!: string;
 
   formatter(value: number) {
-    return value + '%';
+    return value + '%'
   }
 
   get placeholder() {
-    return `${this.min} is minimum`;
+    return `${this.min} is minimum`
   }
 
   get hasAddition() {
-    return this.$slots.default !== undefined;
+    return this.$slots.default !== undefined
   }
 }
 </script>

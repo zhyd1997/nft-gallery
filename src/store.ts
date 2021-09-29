@@ -47,10 +47,10 @@ const apiPlugin = (store: any) => {
 const myPlugin = (store: any) => {
   const { getInstance: Api } = Connector
   if (store.state.setting.apiUrl.match('ws://127.0.0.1:9988')) {
-        Api().connect(store.state.setting.apiUrl, { types: basilisk })
-      } else {
-        Api().connect(store.state.setting.apiUrl)
-      }
+    Api().connect(store.state.setting.apiUrl, { types: basilisk })
+  } else {
+    Api().connect(store.state.setting.apiUrl)
+  }
 
 
 

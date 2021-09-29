@@ -175,23 +175,23 @@
 </template>
 
 <script lang="ts" >
-import { Component, Mixins, Vue } from 'vue-property-decorator';
-import { UniqueNFT as NFT, NFTMetadata } from '../service/scheme';
-import { sanitizeIpfsUrl, resolveMedia } from '../utils';
-import { emptyObject } from '@/utils/empty';
+import { Component, Mixins, Vue } from 'vue-property-decorator'
+import { UniqueNFT as NFT, NFTMetadata } from '../service/scheme'
+import { sanitizeIpfsUrl, resolveMedia } from '../utils'
+import { emptyObject } from '@/utils/empty'
 
-import { notificationTypes, showNotification } from '@/utils/notification';
-import { Option } from '@polkadot/types';
-import isShareMode from '@/utils/isShareMode';
-import { fetchNFTMetadata } from '../utils';
-import { get, set } from 'idb-keyval';
-import { MediaType } from '../types';
-import axios from 'axios';
-import Connector from '@vue-polkadot/vue-api';
-import { BalanceOf, InstanceDetails, InstanceMetadata } from '@polkadot/types/interfaces';
-import SubscribeMixin from '@/utils/mixins/subscribeMixin';
-import nftById from '@/queries/bsx/nftById.graphql';
-import { createTokenId } from '@/components/nft/utils';
+import { notificationTypes, showNotification } from '@/utils/notification'
+import { Option } from '@polkadot/types'
+import isShareMode from '@/utils/isShareMode'
+import { fetchNFTMetadata } from '../utils'
+import { get, set } from 'idb-keyval'
+import { MediaType } from '../types'
+import axios from 'axios'
+import Connector from '@vue-polkadot/vue-api'
+import { BalanceOf, InstanceDetails, InstanceMetadata } from '@polkadot/types/interfaces'
+import SubscribeMixin from '@/utils/mixins/subscribeMixin'
+import nftById from '@/queries/bsx/nftById.graphql'
+import { createTokenId } from '@/components/nft/utils'
 
 @Component<GalleryItem>({
   metaInfo() {
@@ -201,7 +201,7 @@ import { createTokenId } from '@/components/nft/utils';
       Number(this.nft.price)
         ? Vue.filter('formatBalance')(this.nft.price, 12, 'KSM')
         : ''
-    }&image=${this.meta.image as string}`;
+    }&image=${this.meta.image as string}`
     return {
       title: this.nft.name,
       titleTemplate: '%s | Low Carbon NFTs',
@@ -222,7 +222,7 @@ import { createTokenId } from '@/components/nft/utils';
         },
         { property: 'twitter:image', content: image }
       ]
-    };
+    }
   },
   components: {
     Auth: () => import('@/components/shared/Auth.vue'),
@@ -238,108 +238,108 @@ import { createTokenId } from '@/components/nft/utils';
   }
 })
 export default class GalleryItem extends Mixins(SubscribeMixin) {
-  private id: string = '';
+  private id = '';
   private nftId: string | number = '';
-  private passsword: string = '';
+  private passsword = '';
   private nft: any = emptyObject<NFT>();
-  private imageVisible: boolean = true;
-  private viewMode: string = 'default';
-  private isFullScreenView: boolean = false;
-  public isLoading: boolean = true;
-  public mimeType: string = '';
+  private imageVisible = true;
+  private viewMode = 'default';
+  private isFullScreenView = false;
+  public isLoading = true;
+  public mimeType = '';
   public meta: NFTMetadata = emptyObject<NFTMetadata>();
-  public message: string = '';
-  protected itemId: string = '';
+  public message = '';
+  protected itemId = '';
 
   get accountId() {
-    return this.$store.getters.getAuthAddress;
+    return this.$store.getters.getAuthAddress
   }
 
   public async created() {
-    this.checkId();
-    this.fetchCollection();
+    this.checkId()
+    this.fetchCollection()
     setTimeout(() => {
-      this.loadMagic();
-      const { api } = Connector.getInstance();
+      this.loadMagic()
+      const { api } = Connector.getInstance()
       this.subscribe(
         api.query.uniques.asset,
         [this.id, this.itemId],
         this.observeOwner
-      );
+      )
       this.subscribe(
         api.query.marketplace.tokenPrices,
         [this.id, this.itemId],
         this.observePrice
-      );
-    }, 1000);
+      )
+    }, 1000)
   }
 
   observePrice(data: Option<BalanceOf>) {
-    const instance = data.unwrapOr(null);
-    this.$set(this.nft, 'price', instance?.toString());
+    const instance = data.unwrapOr(null)
+    this.$set(this.nft, 'price', instance?.toString())
   }
 
   protected observeOwner(data: Option<InstanceDetails>) {
-    console.log(data.toHuman());
-    const instance = data.unwrapOr(null);
+    console.log(data.toHuman())
+    const instance = data.unwrapOr(null)
     if (instance) {
-      this.$set(this.nft, 'currentOwner', instance.owner.toHuman());
-      this.$set(this.nft, 'delegate', instance.approved.toHuman());
-      console.log('isFreezed', instance.isFrozen);
-      this.$set(this.nft, 'frozen', instance.isFrozen.eq(true));
+      this.$set(this.nft, 'currentOwner', instance.owner.toHuman())
+      this.$set(this.nft, 'delegate', instance.approved.toHuman())
+      console.log('isFreezed', instance.isFrozen)
+      this.$set(this.nft, 'frozen', instance.isFrozen.eq(true))
     } else {
       // check if not burned because burned returns null
-      this.nft = emptyObject<NFT>();
+      this.nft = emptyObject<NFT>()
     }
   }
 
   public async loadMagic() {
-    const { api } = Connector.getInstance();
-    await api?.isReady;
+    const { api } = Connector.getInstance()
+    await api?.isReady
 
     try {
-      console.log('loading magic', this.itemId);
-      const nftId = this.itemId || 0;
-      this.nftId = nftId;
+      console.log('loading magic', this.itemId)
+      const nftId = this.itemId || 0
+      this.nftId = nftId
 
       const nftQ = await api.query.uniques
         .instanceMetadataOf<Option<InstanceMetadata>>(this.id, nftId)
-        .then(res => res.unwrapOr(null));
+        .then(res => res.unwrapOr(null))
 
       if (!nftQ) {
-        showNotification(`No NFT with ID ${nftId}`, notificationTypes.warn);
-        return;
+        showNotification(`No NFT with ID ${nftId}`, notificationTypes.warn)
+        return
       }
 
-      const nftData = nftQ.toHuman();
+      const nftData = nftQ.toHuman()
 
       if (!nftData.data) {
         showNotification(
           `No Metadata with ID ${nftId}`,
           notificationTypes.warn
-        );
-        return;
+        )
+        return
       }
 
-      const nft = await fetchNFTMetadata({ metadata: nftData.data.toString() });
+      const nft = await fetchNFTMetadata({ metadata: nftData.data.toString() })
 
       this.meta = {
         ...nft,
         image: sanitizeIpfsUrl(nft.image || '')
-      };
+      }
 
       this.nft = {
         ...this.nft,
         ...nft,
         ...nftData,
         collectionId: this.id,
-      };
+      }
     } catch (e) {
-      showNotification(`${e}`, notificationTypes.warn);
-      console.warn(e);
+      showNotification(`${e}`, notificationTypes.warn)
+      console.warn(e)
     }
 
-    this.isLoading = false;
+    this.isLoading = false
   }
 
   private async fetchCollection() {
@@ -348,96 +348,96 @@ export default class GalleryItem extends Mixins(SubscribeMixin) {
       variables: {
         id: createTokenId(this.id, this.itemId)
       }
-    });
+    })
 
     const {
       data: { nFTEntity }
-    } = nft;
+    } = nft
 
     if (!nFTEntity) {
-      return;
+      return
     }
 
     this.nft = {
       ...this.nft,
       ...nFTEntity
-    };
+    }
   }
 
   public async fetchMetadata() {
-    console.log(this.nft.emotes);
+    console.log(this.nft.emotes)
 
     if (this.nft['metadata'] && !this.meta['image']) {
-      const m = await get(this.nft.metadata);
-      const meta = m ? m : await fetchNFTMetadata(this.nft);
+      const m = await get(this.nft.metadata)
+      const meta = m ? m : await fetchNFTMetadata(this.nft)
       this.meta = {
         ...meta,
         image: sanitizeIpfsUrl(meta.image || ''),
         animation_url: sanitizeIpfsUrl(meta.animation_url || '', 'pinata')
-      };
+      }
 
-      console.log(this.meta);
+      console.log(this.meta)
       if (this.meta.animation_url && !this.mimeType) {
-        const { headers } = await axios.head(this.meta.animation_url);
-        this.mimeType = headers['content-type'];
-        console.log(this.mimeType);
-        const mediaType = resolveMedia(this.mimeType);
+        const { headers } = await axios.head(this.meta.animation_url)
+        this.mimeType = headers['content-type']
+        console.log(this.mimeType)
+        const mediaType = resolveMedia(this.mimeType)
         this.imageVisible = ![
           MediaType.VIDEO,
           MediaType.MODEL,
           MediaType.IFRAME,
           MediaType.OBJECT
-        ].some(t => t === mediaType);
+        ].some(t => t === mediaType)
       }
 
       if (!m) {
-        set(this.nft.metadata, meta);
+        set(this.nft.metadata, meta)
       }
     }
   }
 
   public checkId() {
     if (this.$route.params.id && this.$route.params.item) {
-      this.id = this.$route.params.id;
-      this.itemId = this.$route.params.item;
+      this.id = this.$route.params.id
+      this.itemId = this.$route.params.item
     }
   }
 
   public toggleView(): void {
-    this.viewMode = this.viewMode === 'default' ? 'theatre' : 'default';
+    this.viewMode = this.viewMode === 'default' ? 'theatre' : 'default'
   }
 
   public toggleFullScreen(): void {
-    this.isFullScreenView = !this.isFullScreenView;
+    this.isFullScreenView = !this.isFullScreenView
   }
 
   public minimize(): void {
-    this.isFullScreenView = false;
+    this.isFullScreenView = false
   }
 
   public toast(message: string): void {
-    this.$buefy.toast.open(message);
+    this.$buefy.toast.open(message)
   }
 
   get hasPrice() {
-    return true;
+    return true
   }
 
   get royalty() {
-    return this.nft?.attributes?.find((e: any) => e.key === 'royalty')?.value;
+    return this.nft?.attributes?.find((e: any) => e.key === 'royalty')?.value
   }
 
   get attributes() {
-    return this.nft?.attributes || [];
+    return this.nft?.attributes || []
   }
 
   get detailVisible() {
-    return !isShareMode;
+    return !isShareMode
   }
 
   protected handleAction(deleted: boolean) {
     if (deleted) {
-      showNotification(`INSTANCE REMOVED`, notificationTypes.warn);
+      showNotification('INSTANCE REMOVED', notificationTypes.warn)
     }
   }
 }

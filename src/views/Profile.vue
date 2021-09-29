@@ -118,16 +118,16 @@ import {
   CollectionWithMeta,
   NFTWithMeta,
   Pack
-} from '@/components/rmrk/service/scheme';
-import isShareMode from '@/utils/isShareMode';
-import Identity from '../components/shared/format/Identity.vue';
-import shouldUpdate from '@/utils/shouldUpdate';
-import collectionList from '@/queries/bsx/collectionListByAccount.graphql';
-import nftListByIssuer from '@/queries/bsx/nftListByIssuer.graphql';
-import nftListCollected from '@/queries/bsx/nftListCollected.graphql';
-import nftListSold from '@/queries/bsx/nftListSold.graphql';
-import firstNftByIssuer from '@/queries/bsx/firstNftByIssuer.graphql';
-import { tokenIdToRoute } from '@/components/nft/utils';
+} from '@/components/rmrk/service/scheme'
+import isShareMode from '@/utils/isShareMode'
+import Identity from '../components/shared/format/Identity.vue'
+import shouldUpdate from '@/utils/shouldUpdate'
+import collectionList from '@/queries/bsx/collectionListByAccount.graphql'
+import nftListByIssuer from '@/queries/bsx/nftListByIssuer.graphql'
+import nftListCollected from '@/queries/bsx/nftListCollected.graphql'
+import nftListSold from '@/queries/bsx/nftListSold.graphql'
+import firstNftByIssuer from '@/queries/bsx/firstNftByIssuer.graphql'
+import { tokenIdToRoute } from '@/components/nft/utils'
 
 const components = {
   GalleryCardList: () =>

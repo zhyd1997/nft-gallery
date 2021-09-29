@@ -97,17 +97,17 @@ import {
   NFTMetadata,
   MintNFT,
   getNftId
-} from '../service/scheme';
-import { pinFile, pinJson, getKey, revokeKey } from '@/proxy';
-import { unSanitizeIpfsUrl, ipfsToArweave } from '@/utils/ipfs';
-import PasswordInput from '@/components/shared/PasswordInput.vue';
+} from '../service/scheme'
+import { pinFile, pinJson, getKey, revokeKey } from '@/proxy'
+import { unSanitizeIpfsUrl, ipfsToArweave } from '@/utils/ipfs'
+import PasswordInput from '@/components/shared/PasswordInput.vue'
 import NFTUtils from '@/components/bsx/NftUtils'
-import RmrkVersionMixin from '@/utils/mixins/rmrkVersionMixin';
-import { supportTx, MaybeFile, calculateCost, offsetTx } from '@/utils/support';
-import collectionForMint from '@/queries/bsx/collectionForMint.graphql';
-import TransactionMixin from '@/utils/mixins/txMixin';
-import ChainMixin from '@/utils/mixins/chainMixin';
-import shouldUpdate from '@/utils/shouldUpdate';
+import RmrkVersionMixin from '@/utils/mixins/rmrkVersionMixin'
+import { supportTx, MaybeFile, calculateCost, offsetTx } from '@/utils/support'
+import collectionForMint from '@/queries/bsx/collectionForMint.graphql'
+import TransactionMixin from '@/utils/mixins/txMixin'
+import ChainMixin from '@/utils/mixins/chainMixin'
+import shouldUpdate from '@/utils/shouldUpdate'
 import {
   nsfwAttribute,
   offsetAttribute,
@@ -201,7 +201,7 @@ export default class CreateToken extends Mixins(
   }
 
   get disabled() {
-    return !(this.nft.name && this.nft.file);
+    return !(this.nft.name && this.nft.file)
   }
 
   @Watch('nft.file')
@@ -241,7 +241,7 @@ export default class CreateToken extends Mixins(
   }
 
   protected createApiCall() {
-    const { api } = Connector.getInstance();
+    const { api } = Connector.getInstance()
 
     if (this.nft.price || this.nft.edition > 1) {
       return api.tx.utility.batchAll
@@ -251,23 +251,23 @@ export default class CreateToken extends Mixins(
   }
 
   protected createApiParams(metadata: string) {
-    const { api } = Connector.getInstance();
-    const { id, alreadyMinted } = this.selectedCollection!;
+    const { api } = Connector.getInstance()
+    const { id, alreadyMinted } = this.selectedCollection!
 
     const args = NFTUtils.createNFT(id, alreadyMinted, this.accountId, this.nft.royalty, metadata)
 
     if (!this.nft.price) {
-      return args;
+      return args
     }
 
-    const calls = [api.tx.nft.mint(...args)];
+    const calls = [api.tx.nft.mint(...args)]
 
     if (this.nft.price) {
       console.log('price', api.tx.marketplace)
-      calls.push(api.tx.marketplace.setPrice(id, alreadyMinted, this.nft.price));
+      calls.push(api.tx.marketplace.setPrice(id, alreadyMinted, this.nft.price))
     }
 
-    return [calls];
+    return [calls]
   }
 
   protected async submit() {
@@ -275,21 +275,21 @@ export default class CreateToken extends Mixins(
       throw ReferenceError('[MINT] Unable to mint without collection')
     }
 
-    this.isLoading = true;
-    this.status = 'loader.ipfs';
-    const { api } = Connector.getInstance();
+    this.isLoading = true
+    this.status = 'loader.ipfs'
+    const { api } = Connector.getInstance()
 
     try {
-      const metadata = await this.constructMeta();
+      const metadata = await this.constructMeta()
       // const metadata = 'ipfs://ipfs/QmaCWgK91teVsQuwLDt56m2xaUfBCCJLeCsPeJyHEenoES'
       // missin possibility to handle more than one remark
 
-      const cb = this.createApiCall();
+      const cb = this.createApiCall()
 
       // do not rely on alreadyMinted, it is not always accurate
       // do not rely subscribe to the collection, it is not always accurate
       // DEV: fetch nft ids from the collection, and reccomend next id
-      const args = this.createApiParams(metadata);
+      const args = this.createApiParams(metadata)
 
 
       const tx = await exec(
@@ -344,7 +344,7 @@ export default class CreateToken extends Mixins(
       const keys: APIKeys = await getKey(this.accountId)
       const fileHash = await pinFileToIPFS(this.nft.file, keys)
 
-      meta.image = unSanitizeIpfsUrl(fileHash);
+      meta.image = unSanitizeIpfsUrl(fileHash)
 
       revokeKey(keys.pinata_api_key)
         .then(console.log, console.warn)

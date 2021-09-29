@@ -7,10 +7,10 @@
 </template>
 
 <script lang="ts">
-import correctFormat from '@/utils/ss58Format';
-import { checkAddress } from '@polkadot/util-crypto';
-import { Debounce } from 'vue-debounce-decorator';
-import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
+import correctFormat from '@/utils/ss58Format'
+import { checkAddress } from '@polkadot/util-crypto'
+import { Debounce } from 'vue-debounce-decorator'
+import { Component, Emit, Prop, Vue } from 'vue-property-decorator'
 
 @Component({})
 export default class AddressInput extends Vue {

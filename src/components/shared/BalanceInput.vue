@@ -27,15 +27,15 @@ import {
   Prop,
   Emit,
   Mixins
-} from 'vue-property-decorator';
-import Balance from '@/params/components/Balance.vue';
-import { units as defaultUnits } from '@/params/constants';
-import { Unit } from '@/params/types';
-import shouldUpdate from '@/utils/shouldUpdate';
-import { Debounce } from 'vue-debounce-decorator';
-import ChainMixin from '@/utils/mixins/chainMixin';
+} from 'vue-property-decorator'
+import Balance from '@/params/components/Balance.vue'
+import { units as defaultUnits } from '@/params/constants'
+import { Unit } from '@/params/types'
+import shouldUpdate from '@/utils/shouldUpdate'
+import { Debounce } from 'vue-debounce-decorator'
+import ChainMixin from '@/utils/mixins/chainMixin'
 
-const components = { Balance };
+const components = { Balance }
 
 type BalanceType = {
   balance: number;
@@ -58,18 +58,18 @@ export default class BalanceInput extends Mixins(ChainMixin) {
   }
 
   formatSelectedValue(value: number): number {
-    return value * 10 ** this.decimals * this.selectedUnit;
+    return value * 10 ** this.decimals * this.selectedUnit
   }
 
   get calculatedBalance() {
-    return this.formatSelectedValue(this.inputValue);
+    return this.formatSelectedValue(this.inputValue)
   }
 
   protected mapper(unit: Unit) {
     if (unit.name === '-') {
-      return { ...unit, name: this.unit };
+      return { ...unit, name: this.unit }
     }
-    return unit;
+    return unit
   }
 
   public mounted() {

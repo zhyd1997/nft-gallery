@@ -77,4 +77,4 @@ export default {
   },
   VestingScheduleOf: 'VestingSchedule',
   PoolId: 'AccountId'
-};
+}

@@ -77,7 +77,7 @@ export default class GalleryCard extends Vue {
   @Prop() public price!: string;
   @Prop() public metadata!: string;
   @Prop() public currentOwner!: string;
-  @Prop(Function) public formatId!: (id: string) => string | object;;
+  @Prop(Function) public formatId!: (id: string) => string | object;
 
 
   private placeholder = '/koda300x300.svg';
@@ -87,7 +87,7 @@ export default class GalleryCard extends Vue {
   }
 
   get params(): string | object {
-    return this.formatId ? this.formatId(this.id) : this.id;
+    return this.formatId ? this.formatId(this.id) : this.id
   }
 
   async mounted() {

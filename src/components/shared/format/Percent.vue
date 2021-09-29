@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator'
 
 @Component
 export default class Percent extends Vue {
@@ -13,7 +13,7 @@ export default class Percent extends Vue {
   @Prop(Boolean) readonly inline!: boolean;
 
   get properValue() {
-    return this.value ? Number(this.value) : 0;
+    return this.value ? Number(this.value) : 0
   }
 }
 </script>

@@ -23,19 +23,19 @@
 </template>
 
 <script lang="ts" >
-import { Component, Mixins, Prop} from 'vue-property-decorator';
-import Connector from '@vue-polkadot/vue-api';
-import exec, { execResultValue, txCb } from '@/utils/transactionExecutor';
-import { notificationTypes, showNotification } from '@/utils/notification';
-import { unpin } from '@/proxy';
-import RmrkVersionMixin from '@/utils/mixins/rmrkVersionMixin';
-import shouldUpdate from '@/utils/shouldUpdate';
-import nftById from '@/queries/nftById.graphql';
-import Null from '@/params/components/Null.vue';
-import NFTUtils, { NFTAction } from '@/components/bsx/NftUtils';
+import { Component, Mixins, Prop} from 'vue-property-decorator'
+import Connector from '@vue-polkadot/vue-api'
+import exec, { execResultValue, txCb } from '@/utils/transactionExecutor'
+import { notificationTypes, showNotification } from '@/utils/notification'
+import { unpin } from '@/proxy'
+import RmrkVersionMixin from '@/utils/mixins/rmrkVersionMixin'
+import shouldUpdate from '@/utils/shouldUpdate'
+import nftById from '@/queries/nftById.graphql'
+import Null from '@/params/components/Null.vue'
+import NFTUtils, { NFTAction } from '@/components/bsx/NftUtils'
 
-const ownerActions: NFTAction[] = [NFTAction.SEND, NFTAction.CONSUME, NFTAction.LIST];
-const buyActions: NFTAction[] = [NFTAction.BUY];
+const ownerActions: NFTAction[] = [NFTAction.SEND, NFTAction.CONSUME, NFTAction.LIST]
+const buyActions: NFTAction[] = [NFTAction.BUY]
 
 const needMeta: Record<string, string> = {
   SEND: 'AddressInput',
@@ -59,7 +59,7 @@ const actionResolver: Record<string, [string, string]> = {
   REVOKE: ['uniques','cancelApproval'],
   // LIST: ['is-light'],
   // BUY: ['is-success is-dark']
-};
+}
 
 type Action = 'SEND' | 'CONSUME' | 'FREEZE' | 'DELEGATE' | '';
 
@@ -84,7 +84,7 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
   protected isLoading = false;
   protected status = ''
 
- get actions() {
+  get actions() {
     return this.isOwner
       ? ownerActions
       : this.isAvailableToBuy
@@ -116,8 +116,8 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
     if (shouldUpdate(action,  this.selectedAction)) {
       this.selectedAction = action
     } else {
-      this.selectedAction = NFTAction.NONE;
-      this.meta = '';
+      this.selectedAction = NFTAction.NONE
+      this.meta = ''
     }
   }
 
@@ -126,7 +126,7 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
       this.delegateId &&
       this.accountId &&
       this.delegateId === this.accountId
-    );
+    )
   }
 
   get isOwner() {
@@ -149,8 +149,8 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
   }
 
   private handleSelect(value: NFTAction) {
-    this.selectedAction = value;
-    this.meta = '';
+    this.selectedAction = value
+    this.meta = ''
   }
 
   private constructRmrk(): string {
@@ -199,29 +199,29 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
   }
 
   protected async submit() {
-    const { api } = Connector.getInstance();
-    this.isLoading = true;
+    const { api } = Connector.getInstance()
+    this.isLoading = true
 
     try {
-      showNotification(`[${this.selectedAction}] ${this.nftId}`);
+      showNotification(`[${this.selectedAction}] ${this.nftId}`)
 
-      const action = NFTUtils.apiCall(this.selectedAction);
+      const action = NFTUtils.apiCall(this.selectedAction)
       if (!action || !this.collectionId) {
-        throw new EvalError('Action or Collection not found');
+        throw new EvalError('Action or Collection not found')
       }
 
-      const [section, method] = action;
+      const [section, method] = action
 
       const cb =  api.tx[section][method]
       const arg = this.getArgs()
 
       const tx = await exec(this.accountId, '', cb, arg, txCb(
         async (blockHash) => {
-          execResultValue(tx);
-          const header = await api.rpc.chain.getHeader(blockHash);
-          const blockNumber = header.number.toString();
+          execResultValue(tx)
+          const header = await api.rpc.chain.getHeader(blockHash)
+          const blockNumber = header.number.toString()
 
-          showNotification(`[NFT] ${this.selectedAction} processed in block ${blockNumber}`, notificationTypes.info);
+          showNotification(`[NFT] ${this.selectedAction} processed in block ${blockNumber}`, notificationTypes.info)
           if (this.isConsume) {
             this.unpinNFT()
           }
@@ -229,15 +229,15 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
           showNotification(
             `[${this.selectedAction}] ${this.nftId}`,
             notificationTypes.success
-          );
-          this.selectedAction = NFTAction.NONE;
-          this.isLoading = false;
+          )
+          this.selectedAction = NFTAction.NONE
+          this.isLoading = false
         },
         err => {
-          execResultValue(tx);
-          showNotification(`[ERR] ${err.hash}`, notificationTypes.danger);
-          this.selectedAction = NFTAction.NONE;
-          this.isLoading = false;
+          execResultValue(tx)
+          showNotification(`[ERR] ${err.hash}`, notificationTypes.danger)
+          this.selectedAction = NFTAction.NONE
+          this.isLoading = false
         },
         res => {
           if (res.status.isReady) {
@@ -266,9 +266,9 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
     }
   }
   getArgs() {
-    const { selectedAction, collectionId, nftId, currentOwnerId, meta } = this;
+    const { selectedAction, collectionId, nftId, currentOwnerId, meta } = this
 
-    return NFTUtils.getActionParams(selectedAction, collectionId, nftId, NFTUtils.correctMeta(selectedAction, String(meta), currentOwnerId));
+    return NFTUtils.getActionParams(selectedAction, collectionId, nftId, NFTUtils.correctMeta(selectedAction, String(meta), currentOwnerId))
   }
 
   protected unpinNFT() {

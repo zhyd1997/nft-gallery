@@ -104,10 +104,10 @@ import Freezeframe from 'freezeframe'
 import 'lazysizes'
 import { SearchQuery } from './Search/types'
 
-import nftListWithSearch from '@/queries/bsx/nftListWithSearch.graphql';
-import { getMany, update } from 'idb-keyval';
-import { denyList } from '@/constants';
-import { $limit } from 'mingo/operators/pipeline';
+import nftListWithSearch from '@/queries/bsx/nftListWithSearch.graphql'
+import { getMany, update } from 'idb-keyval'
+import { denyList } from '@/constants'
+import { $limit } from 'mingo/operators/pipeline'
 
 interface Image extends HTMLImageElement {
   ffInitialized: boolean;
@@ -206,7 +206,7 @@ export default class Gallery extends Vue {
       ...e,
       key: e.id,
       id: e.id.split('-')[1],
-    }));
+    }))
 
     const storedMetadata = await getMany(
       this.nfts.map(({ metadata }: any) => metadata)

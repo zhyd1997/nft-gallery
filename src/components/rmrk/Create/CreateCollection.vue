@@ -161,8 +161,8 @@ export default class CreateCollection extends Mixins(
       ...this.rmrkMint,
       ...this.meta,
       attributes: [],
-      external_url: `https://basilisk.kodadot.xyz`
-    };
+      external_url: 'https://basilisk.kodadot.xyz'
+    }
 
     // TODO: upload image to IPFS
     const imageHash = await pinFileDirect(this.image)
@@ -182,7 +182,7 @@ export default class CreateCollection extends Mixins(
   }
 
   protected async generateNewCollectionId(): Promise<number> {
-    const [...randomNumbers] = window.crypto.getRandomValues(new Uint32Array(10));
+    const [...randomNumbers] = window.crypto.getRandomValues(new Uint32Array(10))
     const cols = this.$apollo.query({
       query: existingCollectionList,
       variables: {
@@ -196,29 +196,29 @@ export default class CreateCollection extends Mixins(
           nodes: collectionList
         }
       }
-    } = await cols;
+    } = await cols
 
-    const existingIds = collectionList.map(({ id }: {id: string}) => id);
-    const newId = randomNumbers.find((id) => !existingIds.includes(id));
-    return Number(newId);
+    const existingIds = collectionList.map(({ id }: {id: string}) => id)
+    const newId = randomNumbers.find((id) => !existingIds.includes(id))
+    return Number(newId)
   }
 
   protected async submit() {
-    this.isLoading = true;
-    this.status = 'loader.ipfs';
+    this.isLoading = true
+    this.status = 'loader.ipfs'
 
 
     try {
-      showNotification(`Creating Collection: ${this.rmrkMint.name}`);
-      const metadata = await this.constructMeta();
+      showNotification(`Creating Collection: ${this.rmrkMint.name}`)
+      const metadata = await this.constructMeta()
       // const metadata = 'ipfs://ipfs/QmaCWgK91teVsQuwLDt56m2xaUfBCCJLeCsPeJyHEenoES'
 
-      const { api } = Connector.getInstance();
+      const { api } = Connector.getInstance()
       const cb = api.tx.nft.createClass
 
-      const randomId = await this.generateNewCollectionId();
+      const randomId = await this.generateNewCollectionId()
 
-      const args = NFTUtils.createCollection(randomId, this.accountId, metadata);
+      const args = NFTUtils.createCollection(randomId, this.accountId, metadata)
       const tx = await exec(
         this.accountId,
         '',

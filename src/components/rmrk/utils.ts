@@ -81,11 +81,11 @@ export const fetchMetadata = async <T>(
 ): Promise<T> => {
   try {
     if (!instance.metadata) {
-      return emptyObject<T>();
+      return emptyObject<T>()
     }
 
-    const { status, data } = await api.get(sanitizer(instance.metadata));
-    console.log('IPFS data', status, data);
+    const { status, data } = await api.get(sanitizer(instance.metadata))
+    console.log('IPFS data', status, data)
     if (status < 400) {
       return data as T
     }
