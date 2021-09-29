@@ -263,7 +263,8 @@ export default class CreateToken extends Mixins(
     const calls = [api.tx.nft.mint(...args)];
 
     if (this.nft.price) {
-      calls.push(api.tx.markteplace.setPrice(id, alreadyMinted, this.nft.price));
+      console.log('price', api.tx.marketplace)
+      calls.push(api.tx.marketplace.setPrice(id, alreadyMinted, this.nft.price));
     }
 
     return [calls];
@@ -279,8 +280,8 @@ export default class CreateToken extends Mixins(
     const { api } = Connector.getInstance();
 
     try {
-      // const metadata = await this.constructMeta();
-      const metadata = 'ipfs://ipfs/QmaCWgK91teVsQuwLDt56m2xaUfBCCJLeCsPeJyHEenoES'
+      const metadata = await this.constructMeta();
+      // const metadata = 'ipfs://ipfs/QmaCWgK91teVsQuwLDt56m2xaUfBCCJLeCsPeJyHEenoES'
       // missin possibility to handle more than one remark
 
       const cb = this.createApiCall();

@@ -52,6 +52,8 @@
           :query="nftListByIssuer"
           @change="totalCreated = $event"
           :account="id"
+          :formatId="formater"
+          type="superDetail"
         />
       </b-tab-item>
       <b-tab-item
@@ -61,8 +63,8 @@
         <Pagination :total="totalCollections" v-model="currentCollectionPage" />
         <GalleryCardList
           :items="collections"
-          type="collectionDetail"
-          link="rmrk/collection"
+          type="superDetail"
+          :formatId="formater"
         />
         <Pagination
           class="pt-5 pb-5"
@@ -80,6 +82,8 @@
           :query="nftListSold"
           @change="totalSold = $event"
           :account="id"
+          :formatId="formater"
+          type="superDetail"
         />
       </b-tab-item>
       <b-tab-item value="collected">
@@ -92,6 +96,8 @@
           :query="nftListCollected"
           @change="totalCollected = $event"
           :account="id"
+          :formatId="formater"
+          type="superDetail"
         />
       </b-tab-item>
 
@@ -116,11 +122,12 @@ import {
 import isShareMode from '@/utils/isShareMode';
 import Identity from '../components/shared/format/Identity.vue';
 import shouldUpdate from '@/utils/shouldUpdate';
-import collectionList from '@/queries/collectionListByAccount.graphql';
-import nftListByIssuer from '@/queries/nftListByIssuer.graphql';
-import nftListCollected from '@/queries/nftListCollected.graphql';
-import nftListSold from '@/queries/nftListSold.graphql';
-import firstNftByIssuer from '@/queries/firstNftByIssuer.graphql';
+import collectionList from '@/queries/bsx/collectionListByAccount.graphql';
+import nftListByIssuer from '@/queries/bsx/nftListByIssuer.graphql';
+import nftListCollected from '@/queries/bsx/nftListCollected.graphql';
+import nftListSold from '@/queries/bsx/nftListSold.graphql';
+import firstNftByIssuer from '@/queries/bsx/firstNftByIssuer.graphql';
+import { tokenIdToRoute } from '@/components/nft/utils';
 
 const components = {
   GalleryCardList: () =>
@@ -213,6 +220,7 @@ export default class Profile extends Vue {
   readonly nftListByIssuer = nftListByIssuer;
   readonly nftListCollected = nftListCollected;
   readonly nftListSold = nftListSold;
+  readonly formater = tokenIdToRoute;
 
   public async mounted() {
     await this.fetchProfile();

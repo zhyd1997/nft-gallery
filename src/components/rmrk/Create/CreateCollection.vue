@@ -210,8 +210,8 @@ export default class CreateCollection extends Mixins(
 
     try {
       showNotification(`Creating Collection: ${this.rmrkMint.name}`);
-      // const metadata = await this.constructMeta();
-      const metadata = 'ipfs://ipfs/QmaCWgK91teVsQuwLDt56m2xaUfBCCJLeCsPeJyHEenoES'
+      const metadata = await this.constructMeta();
+      // const metadata = 'ipfs://ipfs/QmaCWgK91teVsQuwLDt56m2xaUfBCCJLeCsPeJyHEenoES'
 
       const { api } = Connector.getInstance();
       const cb = api.tx.nft.createClass

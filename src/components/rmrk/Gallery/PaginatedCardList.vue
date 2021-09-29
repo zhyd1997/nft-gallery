@@ -1,7 +1,7 @@
 <template>
   <div>
     <Pagination :total="total" v-model="currentValue" />
-    <GalleryCardList :items="items" />
+    <GalleryCardList :items="items" :type="type" :formatId="formatId" />
     <Pagination
       class="pt-5 pb-5"
       :total="total"
@@ -26,8 +26,7 @@ export default class PaginatedCardList extends Vue {
   @Prop({ default: 'rmrk/detail' }) public link!: string;
   @Prop() public query!: DocumentNode;
   @Prop(String) public account!: string;
-
-
+  @Prop(Function) public formatId!: (id: string) => string | object;
 
   private currentValue = 1;
   private first = 20;
