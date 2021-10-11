@@ -3,8 +3,8 @@
     <Loader :value="isLoading" />
     <!-- TODO: Make it work with graphql -->
     <Search v-bind.sync="searchQuery">
-      <b-field class="column is-4 mb-0 is-offset-2 is-narrow">
-        <Pagination simple :total="total" v-model="currentValue" replace class="is-right" />
+      <b-field class="column is-4 mb-0 is-narrow">
+        <Pagination simple :total="total" v-model="currentValue" replace  />
       </b-field>
     </Search>
     <!-- <b-button @click="first += 1">Show {{ first }}</b-button> -->
@@ -25,17 +25,7 @@
                     nft.emoteCount
                   }}</span>
                 </span>
-                <figure class="gallery__image-wrapper">
-                  <img
-                    :src="placeholder"
-                    :data-src="nft.image"
-                    :data-type="nft.type"
-                    :alt="nft.name"
-                    class="lazyload gallery__image"
-                    :class="{ 'card-image__burned': nft.burned }"
-                    @error="onError"
-                  />
-                </figure>
+                <BasicImage :src="nft.image" :alt="nft.name" customClass="gallery__image-wrapper" />
                 <span v-if="nft.price > 0" class="card-image__price">
                   <Money :value="nft.price" inline />
                 </span>
@@ -98,7 +88,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 import { NFTWithMeta, NFT, Metadata } from '../service/scheme'
-import { fetchNFTMetadata, getSanitizer, sanitizeIpfsUrl } from '../utils'
+import { fetchNFTMetadata, getSanitizer } from '../utils'
 import { basicAggQuery } from './Search/query'
 import Freezeframe from 'freezeframe'
 import 'lazysizes'
@@ -107,7 +97,6 @@ import { SearchQuery } from './Search/types'
 import nftListWithSearch from '@/queries/bsx/nftListWithSearch.graphql'
 import { getMany, update } from 'idb-keyval'
 import { denyList } from '@/constants'
-import { $limit } from 'mingo/operators/pipeline'
 
 interface Image extends HTMLImageElement {
   ffInitialized: boolean;
@@ -120,6 +109,7 @@ const components = {
   Money: () => import('@/components/shared/format/Money.vue'),
   Pagination: () => import('./Pagination.vue'),
   Loader: () => import('@/components/shared/Loader.vue'),
+  BasicImage: () => import('@/components/shared/view/BasicImage.vue'),
 }
 
 @Component<Gallery>({
@@ -161,7 +151,8 @@ export default class Gallery extends Vue {
   private searchQuery: SearchQuery = {
     search: '',
     type: '',
-    sortBy: { blockNumber: -1 }
+    sortBy: 'BLOCK_NUMBER_DESC',
+    listed: false,
   };
   private first = 12;
   private placeholder = '/koda300x300.svg';
@@ -188,13 +179,8 @@ export default class Gallery extends Vue {
           first: this.first,
           offset: this.offset,
           denyList,
-          search: this.searchQuery.search
-            ? [
-              {
-                name: { likeInsensitive: `%${this.searchQuery.search}%` }
-              }
-            ]
-            : []
+          orderBy: this.searchQuery.sortBy,
+          search: this.buildSearchParam()
         }
       }
     })
@@ -238,6 +224,7 @@ export default class Gallery extends Vue {
     this.prefetchPage(this.offset + this.first, this.offset + (3 * this.first))
   }
 
+
   public async prefetchPage(offset: number, prefetchLimit: number) {
     try {
       const nfts = this.$apollo.query({
@@ -246,13 +233,8 @@ export default class Gallery extends Vue {
           first: this.first,
           offset,
           denyList,
-          search: this.searchQuery.search
-            ? [
-              {
-                name: { likeInsensitive: `%${this.searchQuery.search}%` }
-              }
-            ]
-            : []
+          orderBy: this.searchQuery.sortBy,
+          search: this.buildSearchParam()
         }
       })
 
@@ -284,6 +266,24 @@ export default class Gallery extends Vue {
       }
     }
 
+  }
+
+  private buildSearchParam(): Record<string, unknown>[] {
+    const params = []
+
+    if (this.searchQuery.search) {
+      params.push({
+        name: { likeInsensitive: `%${this.searchQuery.search}%` }
+      })
+    }
+
+    if (this.searchQuery.listed) {
+      params.push({
+        price: { greaterThan: '0' }
+      })
+    }
+
+    return params
   }
 
   get results() {
@@ -339,18 +339,14 @@ export default class Gallery extends Vue {
     cursor: pointer;
   }
 
-  &__image {
-    bottom: 0;
-    left: 0;
-    position: absolute;
-    right: 0;
+  .card-image img {
     border-radius: 8px;
     top: 50%;
     transition: all 0.3s;
     display: block;
     width: 100%;
     height: auto;
-    transform: scale(1) translateY(-50%);
+    transform: scale(1);
   }
 
   .ff-container {
@@ -460,11 +456,12 @@ export default class Gallery extends Vue {
         }
 
         &:hover .gallery__image-wrapper img {
-          transform: scale(1.1) translateY(-50%);
+          transform: scale(1.1);
+          transition: transform 0.3s linear;
         }
 
         &:hover .ff-canvas {
-          transform: scale(1.1) translateY(-50%);
+          transform: scale(1.1);
         }
 
         &:hover .card-image__emotes {
