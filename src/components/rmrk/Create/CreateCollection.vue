@@ -7,11 +7,6 @@
       </p>
       <p class="subtitle is-size-7">{{ $t("using") }} {{ version }}</p>
       <b-field>
-        <div>
-          {{ $t("computed id") }}: <b>{{ rmrkId }}</b>
-        </div>
-      </b-field>
-      <b-field>
         <Auth />
       </b-field>
 
@@ -33,7 +28,7 @@
         ></b-input>
         <Tooltip iconsize="is-medium" :label="$i18n.t('tooltip.name')" />
       </b-field>
-      <b-field>
+      <!-- <b-field>
         <b-switch v-model="unlimited" :rounded="false">
           {{ $t("mint.unlimited") }}
         </b-switch>
@@ -44,17 +39,17 @@
           placeholder="1 is minumum"
           :min="1"
         ></b-numberinput>
-      </b-field>
-      <b-field grouped :label="$i18n.t('Symbol')" class="mb-0">
+      </b-field> -->
+      <b-field :label="$i18n.t('Collection')" class="mb-0">
         <b-input
-          placeholder="3-5 character long name"
+          placeholder="Collection ID"
           maxlength="10"
           @keydown.native.space.prevent
           v-model="rmrkMint.symbol"
+          pattern="[0-9]{1,10}"
           expanded
           class="mr-0"
         ></b-input>
-        <Tooltip iconsize="is-medium" :label="$i18n.t('tooltip.symbol')" />
       </b-field>
       <b-field :label="$i18n.t('Collection description')" class="mb-0">
         <b-input
@@ -135,10 +130,6 @@ export default class CreateCollection extends Mixins(
     return this.$store.getters.getAuthAddress
   }
 
-  get rmrkId(): string {
-    return generateId(this.accountId, this.rmrkMint?.symbol || '')
-  }
-
   get accountIdToPubKey() {
     return (this.accountId && u8aToHex(decodeAddress(this.accountId))) || ''
   }
@@ -161,7 +152,7 @@ export default class CreateCollection extends Mixins(
       ...this.rmrkMint,
       ...this.meta,
       attributes: [],
-      external_url: 'https://basilisk.kodadot.xyz'
+      external_url: 'https://nft.kodadot.xyz'
     }
 
     // TODO: upload image to IPFS
@@ -216,7 +207,8 @@ export default class CreateCollection extends Mixins(
       const { api } = Connector.getInstance()
       const cb = api.tx.nft.createClass
 
-      const randomId = await this.generateNewCollectionId()
+      const randomId = this.rmrkMint.symbol
+      // const randomId = await this.generateNewCollectionId()
 
       const args = NFTUtils.createCollection(randomId, this.accountId, metadata)
       const tx = await exec(

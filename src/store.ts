@@ -44,9 +44,11 @@ const apiPlugin = (store: any) => {
   })
 }
 
+const localSnek = 'wss://basilisk-kodadot.hydration.cloud'
+
 const myPlugin = (store: any) => {
   const { getInstance: Api } = Connector
-  if (store.state.setting.apiUrl.match('ws://127.0.0.1:9988')) {
+  if (store.state.setting.apiUrl.match('ws://127.0.0.1:9988') || store.state.setting.apiUrl.match(localSnek)) {
     Api().connect(store.state.setting.apiUrl, { types: basilisk })
   } else {
     Api().connect(store.state.setting.apiUrl)
@@ -57,7 +59,9 @@ const myPlugin = (store: any) => {
   store.subscribeAction(({type, payload}: ChangeUrlAction, _: any) => {
     if (type === 'setApiUrl' && payload) {
       store.commit('setLoading', true)
-      if (payload.match('ws://127.0.0.1:9988')) {
+      console.log('[API] LALA', payload)
+      if (payload.match('ws://127.0.0.1:9988') || payload.match(localSnek)) {
+        console.log('[API] LALA', payload)
         Api().connect(payload, { types: basilisk })
       } else {
         Api().connect(payload)

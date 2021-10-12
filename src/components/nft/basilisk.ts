@@ -1,7 +1,7 @@
 export default {
   AssetPair: {
     asset_in: 'AssetId',
-    asset_out: 'AssetId'
+    asset_out: 'AssetId',
   },
   Amount: 'i128',
   AmountOf: 'Amount',
@@ -9,20 +9,21 @@ export default {
   OrmlAccountData: {
     free: 'Balance',
     frozen: 'Balance',
-    reserved: 'Balance'
+    reserved: 'Balance',
   },
   Fee: {
     numerator: 'u32',
-    denominator: 'u32'
+    denominator: 'u32',
   },
   BalanceInfo: {
     amount: 'Balance',
-    assetId: 'AssetId'
+    assetId: 'AssetId',
   },
   Chain: {
     genesisHash: 'Vec<u8>',
-    lastBlockHash: 'Vec<u8>'
+    lastBlockHash: 'Vec<u8>',
   },
+  Currency: 'AssetId',
   CurrencyId: 'AssetId',
   CurrencyIdOf: 'AssetId',
   Intention: {
@@ -31,50 +32,87 @@ export default {
     asset_buy: 'AssetId',
     amount: 'Balance',
     discount: 'bool',
-    sell_or_buy: 'IntentionType'
+    sell_or_buy: 'IntentionType',
   },
   IntentionId: 'Hash',
   IntentionType: {
-    _enum: ['SELL', 'BUY']
+    _enum: ['SELL', 'BUY'],
   },
   LookupSource: 'AccountId',
   Price: 'Balance',
-  TokenId: 'u64',
-  ClassIdOfUnique: 'Compact<u32>',
-  NftClassIdOf: 'u32',
-  NftTokenIdOf: 'u32',
-  ClassId: 'u32',
-  InstanceId: 'u32',
-  ClassData: {
-    is_pool: 'bool'
-  },
-  TokenData: {
-    locked: 'bool',
-    emote: 'Vec<u8>'
-  },
-  CID: 'Vec<u8>',
-  ClassInfo: {
-    metadata: 'Vec<u8>',
-    total_issuance: 'TokenId',
-    owner: 'AccountId',
-    data: 'ClassData'
-  },
-  TokenInfo: {
-    metadata: 'Vec<u8>',
-    owner: 'AccountId',
-    data: 'TokenData'
-  },
-  ClassInfoOf: 'ClassInfo',
-  TokenInfoOf: 'TokenInfo',
-  ClassIdOf: 'ClassId',
-  TokenIdOf: 'TokenId',
   OrderedSet: 'Vec<AssetId>',
   VestingSchedule: {
     start: 'BlockNumber',
     period: 'BlockNumber',
     period_count: 'u32',
-    per_period: 'Compact<Balance>'
+    per_period: 'Compact<Balance>',
   },
   VestingScheduleOf: 'VestingSchedule',
-  PoolId: 'AccountId'
+  LBPAssetInfo: {
+    id: 'AssetId',
+    amount: 'Balance',
+    initial_weight: 'LBPWeight',
+    final_weight: 'LBPWeight',
+  },
+  LBPWeight: 'u128',
+  WeightPair: {
+    weight_a: 'LBPWeight',
+    weight_b: 'LBPWeight',
+  },
+  WeightCurveType: {
+    _enum: ['Linear'],
+  },
+  PoolId: 'AccountId',
+  BalanceOf: 'Balance',
+  AssetType: {
+    _enum: {
+      Token: 'Null',
+      PoolShare: '(AssetId,AssetId)',
+    },
+  },
+  Pool: {
+    owner: 'AccountId',
+    start: 'BlockNumber',
+    end: 'BlockNumber',
+    assets: 'AssetPair',
+    initial_weights: 'WeightPair',
+    final_weights: 'WeightPair',
+    last_weight_update: 'BlockNumber',
+    last_weights: 'WeightPair',
+    weight_curve: 'WeightCurveType',
+    pausable: 'bool',
+    paused: 'bool',
+    fee: 'Fee',
+    fee_receiver: 'AccountId',
+  },
+  AssetNativeLocation: 'MultiLocation',
+  AssetDetails: {
+    name: 'Vec<u8>',
+    asset_type: 'AssetType',
+    existential_deposit: 'Balance',
+    locked: 'bool',
+  },
+  AssetDetailsT: 'AssetDetails',
+  AssetMetadata: {
+    symbol: 'Vec<u8>',
+    decimals: 'u8',
+  },
+  ClassId: 'u32',
+  InstanceId: 'u32',
+  NftClassIdOf: 'u32',
+  NftTokenIdOf: 'u32',
+  ClassType: {
+    _enum: ['Art', 'PoolShare'],
+  },
+  TokenInfo: {
+    author: 'AccountId',
+    royalty: 'u8',
+    price: 'Option<Balance>',
+  },
+  TokenInfoOf: 'TokenInfo',
+  AssetInstance: 'AssetInstanceV0',
+  MultiLocation: 'MultiLocationV0',
+  MultiAsset: 'MultiAssetV0',
+  Xcm: 'XcmV0',
+  XcmOrder: 'XcmOrderV0',
 }
