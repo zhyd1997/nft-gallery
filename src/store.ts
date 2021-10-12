@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersist from 'vuex-persist'
-import SettingModule from '@vue-polkadot/vue-settings'
+import { OverrideSettingModule } from '@vue-polkadot/vue-settings'
 import Connector from '@vue-polkadot/vue-api'
 import IdentityModule from './vuex/IdentityModule'
 import correctFormat from './utils/ss58Format'
@@ -66,7 +66,8 @@ const myPlugin = (store: any) => {
   })
 }
 
-// TODO: create instance of Texitle here as plugin
+const defaultApiUrl = process.env.VUE_APP_WS_URL ? { apiUrl: process.env.VUE_APP_WS_URL } : {}
+const SettingModule = OverrideSettingModule(defaultApiUrl)
 
 Vue.use(Vuex)
 
