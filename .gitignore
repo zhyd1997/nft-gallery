@@ -80,3 +80,7 @@ typings/
 # dotenv environment variables file
 .env
 .vscode/
+
+
+# Cypres e2e 
+/cypress/videos
