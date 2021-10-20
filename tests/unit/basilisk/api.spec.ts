@@ -6,7 +6,7 @@ import basilisk from '@/components/nft/basilisk'
 import NFTUtils, { NFTAction } from '@/components/bsx/NftUtils'
 import { SubmittableExtrinsic } from '@polkadot/api/types'
 
-const WS_URL = 'ws://127.0.0.1:9988'
+const WS_URL = 'wss://basilisk-kodadot.hydration.cloud'
 const CANARY_IPFS =
   'ipfs://ipfs/QmaCWgK91teVsQuwLDt56m2xaUfBCCJLeCsPeJyHEenoES'
 

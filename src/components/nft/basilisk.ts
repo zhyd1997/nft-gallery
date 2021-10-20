@@ -108,6 +108,7 @@ export default {
     author: 'AccountId',
     royalty: 'u8',
     price: 'Option<Balance>',
+    offer: 'Option<(AccountId,Balance,BlockNumber)>',
   },
   TokenInfoOf: 'TokenInfo',
   AssetInstance: 'AssetInstanceV0',
