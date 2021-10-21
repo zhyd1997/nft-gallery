@@ -1,5 +1,10 @@
 import { AccountId } from '@polkadot/types/interfaces'
 
+export enum CollectionType {
+  Art = 'Art',
+  PoolShare = 'PoolShare',
+}
+
 export class ClassData {
   // tslint:disable
   is_pool = true;

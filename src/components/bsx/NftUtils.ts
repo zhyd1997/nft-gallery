@@ -1,3 +1,5 @@
+import { CollectionType } from './types';
+
 type Id = string | number;
 
 export enum NFTAction {
@@ -5,6 +7,11 @@ export enum NFTAction {
   CONSUME='CONSUME',
   BUY='BUY',
   LIST='LIST',
+  OFFER='OFFER',
+  ACCEPT='ACCEPT',
+  UNLIST='UNLIST',
+  SETPRICE='SETPRICE',
+  WITHDRAW='WITHDRAW',
   NONE='',
 }
 
@@ -13,46 +20,56 @@ export const actionResolver: Record<NFTAction, [string, string]> = {
   CONSUME: ['nft','burn'],
   BUY: ['marketplace','buy'],
   LIST: ['marketplace', 'setPrice'],
+  OFFER: ['marketplace', 'makeOffer'],
+  ACCEPT: ['marketplace', 'acceptOffer'],
+  UNLIST: ['marketplace', 'unlist'],
+  SETPRICE: ['marketplace', 'setPrice'],
+  WITHDRAW: ['marketplace', 'withdrawOffer'],
   '': ['',''],
 }
 
+type CollectionTypeParam = { [x: string]: null }
+
 class NFTUtils {
-  static createCollection(id: Id, admin: string, metadata: string): [string, string, string] {
-    return [String(id), admin, metadata]
+  static createCollection(collectionType: CollectionType, metadata: string): [CollectionTypeParam, string] {
+    return [{ [collectionType]: null }, metadata]
   }
 
-  static createNFT(classId: Id, id: Id, owner: string, royalty: number, metadata: string)  {
-    return [String(classId), String(id), owner, royalty, metadata]
+  static createNFT(classId: Id, metadata: string): [string, string]  {
+    return [String(classId), metadata]
   }
 
-  static getActionParams(selectedAction: NFTAction, classId: Id, id: Id, meta: string) {
+  static getActionParams(selectedAction: NFTAction, classId: Id, id: Id, meta: string[] = []): Id[] {
     switch (selectedAction) {
     case NFTAction.SEND:
-    case NFTAction.CONSUME:
     case NFTAction.LIST:
-      return [classId, id, meta]
+      return [classId, id, ...meta]
+    case NFTAction.ACCEPT:
     case NFTAction.BUY:
-      return [meta, classId, id]
+    case NFTAction.UNLIST:
+    case NFTAction.WITHDRAW:
+    case NFTAction.CONSUME:
+      return [classId, id]
     default:
       throw new Error('Action not found')
     }
   }
 
-  static apiCall(selectedAction: NFTAction) {
+  static apiCall(selectedAction: NFTAction): [string, string] {
     return actionResolver[selectedAction] || new Error('Action not found')
 
   }
 
-  static correctMeta(selectedAction: NFTAction, meta: string, currentOwner: string): string {
+  static correctMeta(selectedAction: NFTAction, meta: string, secondMeta: string): string[] {
     switch (selectedAction) {
     case NFTAction.SEND:
     case NFTAction.LIST:
-      return meta
+      return [meta]
     case NFTAction.CONSUME:
     case NFTAction.BUY:
-      return currentOwner
+      return [meta, secondMeta]
     default:
-      throw new Error('Action not found')
+      return []
     }
   }
 }
