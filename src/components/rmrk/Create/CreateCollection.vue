@@ -83,6 +83,9 @@
       <b-field>
         <Support v-model="hasSupport" :price="filePrice" />
       </b-field>
+      <b-field>
+        <StorageSelector v-model="storage" />
+      </b-field>
     </div>
   </div>
 </template>
@@ -113,6 +116,7 @@ const components = {
   Tooltip: () => import('@/components/shared/Tooltip.vue'),
   Support: () => import('@/components/shared/Support.vue'),
   Loader: () => import('@/components/shared/Loader.vue'),
+  StorageSelector: () => import('./StorageSelector.vue'),
 }
 
 @Component({ components })
@@ -129,6 +133,7 @@ export default class CreateCollection extends Mixins(
   private password = '';
   private hasSupport = true;
   protected unlimited = true;
+  protected storage = 'ipfs'
 
   get accountId() {
     return this.$store.getters.getAuthAddress

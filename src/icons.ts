@@ -20,6 +20,7 @@ import {
   faAngleLeft, faAngleRight, faReply,
   faExternalLinkSquareAlt, faGift,
   faEyeSlash, faArrowUp, faUser, faGlobe, faExclamationCircle, faFilter,
+  faBox, faRocket, faSnowflake
 
 } from '@fortawesome/free-solid-svg-icons'
 
@@ -59,6 +60,7 @@ library.add(
   faArrowsAlt, faCompressAlt, faCompressArrowsAlt,
   faEyeSlash, faArrowUp, faUser, faGlobe,
   faExclamationCircle, faFilter, faGift,
+  faBox, faRocket, faSnowflake,
 
   // Social
   faTwitter, faTelegram, faFacebook,
