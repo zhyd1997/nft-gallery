@@ -83,7 +83,7 @@
       <b-field>
         <Support v-model="hasSupport" :price="filePrice" />
       </b-field>
-      <b-field>
+      <b-field label-position="" :label="$i18n.t('Storage')">
         <StorageSelector v-model="storage" />
       </b-field>
     </div>
