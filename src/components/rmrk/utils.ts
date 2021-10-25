@@ -19,6 +19,7 @@ export const DEFAULT_IPFS_PROVIDER = 'https://ipfs.io/'
 export type ProviderKeyType = IPFSProviders
 export type ArweaveProviders = 'permafrost' | 'arweave'
 export type IPFSProviders = 'pinata' | 'cloudflare' | 'ipfs' | 'dweb' | 'kodadot'
+export type SiaProviders = 'skynet'
 
 export const ipfsProviders: Record<IPFSProviders, string> = {
   pinata: 'https://kodadot.mypinata.cloud/',
@@ -31,6 +32,10 @@ export const ipfsProviders: Record<IPFSProviders, string> = {
 export const arweaveProviders: Record<ArweaveProviders, string> = {
   permafrost: process.env.VUE_APP_PERMAFROST_URL + '/meta/',
   arweave: process.env.VUE_APP_AR_URL+ '/' || 'https://arweave.net/',
+}
+
+export const siaProviders: Record<SiaProviders, string> = {
+  skynet: 'https://siasky.net'
 }
 
 export type SanitizerFunc = (url: string) => string
@@ -47,6 +52,7 @@ export const ipfsHashToUrl = (ipfsHash?: string, provider?: ProviderKeyType) => 
 
 const resolveProvider = (key: ProviderKeyType = 'kodadot'): string => ipfsProviders[key]
 const resolveArProvider = (key: ArweaveProviders = 'arweave'): string => arweaveProviders[key]
+const resolveSiaProvider = (key: SiaProviders = 'skynet'): string => siaProviders[key]
 
 export const zip = <T1, T2, T3>(a: T1[], b: T2[], cb?: (el: (T1 | T2)[]) => T3): T3[] | (T1 | T2)[][] => {
   const res = a.map((k, i) => [k, b[i]])
@@ -121,6 +127,7 @@ const unSanitizeUrl = (url: string, prefix: string) => {
 }
 
 const ar = /^ar:\/\//
+const sia = /^sia:\/\//
 
 export const sanitizeArweaveUrl = (url: string, provider?: ArweaveProviders) => {
   if (ar.test(url)) {
