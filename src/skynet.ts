@@ -9,8 +9,9 @@ export const pinJson = async (object: Record<string, unknown>, fileName?: string
   return pinFile(blob, fileName ?? 'metadata.json')
 }
 
-export const pinFile = async (blob: Blob, fileName: string): Promise<string> => {
-  const file = new File([blob], fileName)
+export const pinFile = async (blob: Blob, fileName?: string): Promise<string> => {
+  const name = fileName ?? `content.${blob.type.split('/')[1]}`
+  const file = new File([blob], name)
   const { skylink } = await api.uploadFile(file)
   console.log('[SKYNET] Pin Image', skylink)
   return skylink
