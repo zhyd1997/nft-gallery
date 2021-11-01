@@ -195,7 +195,14 @@
     "estimated": "Transaction fees will cost about",
     "success": "Congrats to your new NFT(s)",
     "shareWithFriends": "Share {0} with your friends",
-    "unlimited": "Unlimited items in in your collection"
+    "unlimited": "Unlimited items in in your collection",
+    "expert": {
+      "show": "Show advanced settings",
+      "hide": "Hide advanced settings",
+      "count": "Currently matched {0} adresses",
+      "countGlitch": "You have more adresses than available editions. This can cause a problem. Consider to set EDITION field to at least to {0}",
+      "postfix": "Add hashtag and index after the name (e.g #1)"
+    }
   },
   "tooltip": {
     "symbol": "The symbol which is attributed to the NFT: for an example, Kusama is labeled as KSM",
@@ -247,12 +254,13 @@
     "accept": "I confirm that I hold full copyright ownership of the submitted digital asset (or have sufficient permission by the owner to use the asset)"
   },
   "profile": {
+    "user": "User",
     "created": "Created",
     "collected": "Collected",
     "sold": "Sold"
   },
   "spotlight": {
-	"filter_accounts": "Accounts With Identity",
+    "filter_accounts": "Accounts With Identity",
     "id": "Creator",
     "sold": "Sold",
     "unique": "Unique",
@@ -264,13 +272,13 @@
     "empty": "Empty"
   },
   "series": {
-	"title": "Top Collection",
-	"subtitle": "The top NFTs on RMRK, ranked by volume, floor price and other statistics.",
-	"assets": "Assets",
-	"collected": "Collected",
-	"floorprice": "Floor price",
-	"owners": "Owners",
-	"volume": "Volume"
+    "title": "Top Collection",
+    "subtitle": "The top NFTs on RMRK, ranked by volume, floor price and other statistics.",
+    "assets": "Assets",
+    "collected": "Collected",
+    "floorprice": "Floor price",
+    "owners": "Owners",
+    "volume": "Volume"
   },
   "tutorial": {
     "create": "1. Create polkadot js account",
@@ -281,6 +289,15 @@
     "balance": "Balance",
     "submit": "Submit",
     "indexerReadOnly": "App is in read only mode, try reload app or visit Discord"
+  },
+  "helper": {
+    "noCollections": "You have no collections",
+    "clickToCreate": "Click here to create collection"
+  },
+  "action": {
+    "admin": "Admin panel",
+    "click": "Click to {0} NFT(s)",
+    "omitListed": "Skip listed NFT(s)"
   },
   "action": {
     "SEND": "Send",

@@ -24,7 +24,7 @@ export default class CollapseWrapper extends Vue {
   @Prop({ type: String, default: 'Hide' }) hidden!: string;
   @Prop(Boolean) bottom!: boolean;
 
-  get position() {
+  get position(): string {
     return this.bottom ? 'is-bottom' : 'is-top'
   }
 }
