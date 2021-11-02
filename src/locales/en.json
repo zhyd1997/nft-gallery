@@ -297,14 +297,18 @@
   "action": {
     "admin": "Admin panel",
     "click": "Click to {0} NFT(s)",
-    "omitListed": "Skip listed NFT(s)"
-  },
-  "action": {
+    "omitListed": "Skip listed NFT(s)",
     "SEND": "Send",
     "CONSUME": "Burn",
     "DELEGATE": "Delegate transfer",
     "FREEZE": "Freeze",
     "THAW": "Unfreeze",
     "REVOKE": "Cancel delegation"
+  },
+  "identity": {
+    "set": "Create on-chain identity",
+    "click": "Click to create identity",
+    "handleRequired": "Your handle is required",
+    "deposit": "Deposit"
   }
 }

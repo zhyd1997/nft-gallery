@@ -1,41 +1,42 @@
 <template>
-  <div class="profile-wrapper container is-fluid">
-    <div class="columns is-centered">
-      <div class="column is-half has-text-centered">
-        <div class="container image is-64x64 mb-2">
-          <Avatar :value="id" />
+  <div class="section">
+    <div class="profile-wrapper container">
+      <div class="columns is-centered">
+        <div class="column is-half has-text-centered">
+          <div class="container image is-64x64 mb-2">
+            <Avatar :value="id" />
+          </div>
+          <h1 class="title is-2">
+            <a
+              :href="`https://kusama.subscan.io/account/${id}`"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Identity ref="identity" :address="id" inline emit @change="handleIdentity" />
+            </a>
+          </h1>
         </div>
-        <h1 class="title is-2">
-          <a
-            :href="`https://kusama.subscan.io/account/${id}`"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Identity ref="identity" :address="id" inline emit @change="handleIdentity" />
-          </a>
-        </h1>
       </div>
-    </div>
 
-    <div class="columns">
-      <div class="column">
-        <div class="label">
-          {{ $t('profile.user') }}
+      <div class="columns">
+        <div class="column">
+          <div class="label">
+            {{ $t('profile.user') }}
+          </div>
+          <div class="subtitle is-size-6">
+            <ProfileLink :address="id" :inline="true" :showTwitter="true"/>
+          </div>
         </div>
-        <div class="subtitle is-size-6">
-          <ProfileLink :address="id" :inline="true" :showTwitter="true"/>
+        <div class="column is-2">
+          <Sharing
+            class="mb-2"
+            v-if="!sharingVisible"
+            label="Check this awesome Profile on %23KusamaNetwork %23KodaDot"
+            :iframe="iframeSettings"
+          />
+          <DonationButton :address="id" style="width: 100%;" />
         </div>
       </div>
-      <div class="column is-2">
-        <Sharing
-          class="mb-2"
-          v-if="!sharingVisible"
-          label="Check this awesome Profile on %23KusamaNetwork %23KodaDot"
-          :iframe="iframeSettings"
-        />
-        <DonationButton :address="id" style="width: 100%;" />
-      </div>
-    </div>
 
     <b-tabs
       :class="{ 'invisible-tab': sharingVisible }"
