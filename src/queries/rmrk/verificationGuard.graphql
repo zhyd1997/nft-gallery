@@ -1,0 +1,8 @@
+subscription VerificationGuard($id: String!) {
+  nfts(where: { id: { _eq: $id } }) {
+    id
+    txBlock
+    txCaller
+    txPending
+  }
+}
