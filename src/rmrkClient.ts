@@ -1,9 +1,7 @@
-import ApolloClient from 'apollo-boost'
-// import { HttpLink } from 'apollo-link-http'
-// import { split } from 'apollo-link'
-// import { WebSocketLink } from 'apollo-link-ws'
-// import { getMainDefinition } from 'apollo-utilities'
 
+import { ApolloClient } from 'apollo-client'
+import { InMemoryCache } from 'apollo-cache-inmemory'
+import { WebSocketLink } from 'apollo-link-ws'
 
 
 // const httpLink = new HttpLink({
@@ -11,12 +9,12 @@ import ApolloClient from 'apollo-boost'
 // })
 
 // Create the subscription websocket link
-// const wsLink = new WebSocketLink({
-//   uri: 'wss://gql.rmrk.app/v1/graphql',
-//   options: {
-//     reconnect: true,
-//   },
-// })
+const link = new WebSocketLink({
+  uri: 'wss://gql.rmrk.app/v1/graphql',
+  options: {
+    reconnect: true,
+  },
+})
 
 // const link = split(
 //   // split based on operation type
@@ -31,7 +29,8 @@ import ApolloClient from 'apollo-boost'
 
 const apolloClient = new ApolloClient({
   name: 'rmrk',
-  uri: 'https://gql.rmrk.app/v1/graphql'
+  link,
+  cache: new InMemoryCache()
 })
 
 export default apolloClient
