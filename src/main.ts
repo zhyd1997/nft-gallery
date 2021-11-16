@@ -39,6 +39,7 @@ import { useOperators, OperatorType } from 'mingo/core'
 import { $match, $group, $project } from 'mingo/operators/pipeline'
 import { $sum, $first, $push, $avg } from 'mingo/operators/accumulator'
 import apolloClient from './subquery'
+import rmrkApolloClient from './rmrkClient'
 // import { resolveSubsocialApi } from './components/subsocial/api'
 
 // ensure the required operators are preloaded prior to using them.
@@ -92,6 +93,9 @@ Vue.filter('toSanitizedUrl', toSanitizedUrl)
 Vue.use(VueClipboard)
 
 const apolloProvider = new VueApollo({
+  clients: {
+    rmrkApolloClient
+  },
   defaultClient: apolloClient,
 })
 
