@@ -10,6 +10,7 @@ query collectionIssuerList($denyList: [String!]) {
           metadata
           price
           events
+          __typename
         }
       }
     }

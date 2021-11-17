@@ -77,7 +77,7 @@ export default class PaginatedCardList extends Vue {
     return this.currentValue * this.first - this.first
   }
 
-  created() {
+  protected created(): void {
     this.$apollo.addSmartQuery('items', {
       query: this.query,
       manual: true,
