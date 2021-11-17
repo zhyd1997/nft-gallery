@@ -155,6 +155,7 @@
                           nft.metadata,
                         ]"
                         @change="handleAction"
+                        :transactionPending="isTransactionPending"
                       />
                     </IndexerGuard>
                   </p>
@@ -177,7 +178,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { NFT, NFTMetadata, Emote } from '../service/scheme'
+import { NFT, NFTMetadata, Emote, PendingTransaction } from '../service/scheme'
 import { sanitizeIpfsUrl, resolveMedia, getSanitizer } from '../utils'
 import { emptyObject } from '@/utils/empty'
 
@@ -262,6 +263,7 @@ export default class GalleryItem extends Vue {
   public meta: NFTMetadata = emptyObject<NFTMetadata>()
   public emotes: Emote[] = []
   public message = ''
+  public pendingTransaction: PendingTransaction = emptyObject<PendingTransaction>()
 
   get accountId() {
     return this.$store.getters.getAuthAddress
@@ -269,7 +271,7 @@ export default class GalleryItem extends Vue {
 
   public checkRug(): void {
     console.log(this.$apolloProvider.clients)
-    const observer = this.$apollo.subscribe({
+    const observer = this.$apollo.subscribe<{ nfts: PendingTransaction[] }>({
       client: 'rmrkApolloClient',
       query: verificationGuard,
       variables: {
@@ -278,9 +280,7 @@ export default class GalleryItem extends Vue {
     })
 
     observer.subscribe({
-      next(data) {
-        console.log(data)
-      },
+      next: (data) => this.pendingTransaction = data.data?.nfts[0] || emptyObject<PendingTransaction>(),
       error(error) {
         console.error(error)
       },
@@ -339,9 +339,9 @@ export default class GalleryItem extends Vue {
       const meta = m
         ? m
         : await fetchNFTMetadata(
-            this.nft,
-            getSanitizer(this.nft.metadata, undefined, 'permafrost')
-          )
+          this.nft,
+          getSanitizer(this.nft.metadata, undefined, 'permafrost')
+        )
       console.log(meta)
 
       const imageSanitizer = getSanitizer(meta.image)
@@ -400,24 +400,28 @@ export default class GalleryItem extends Vue {
     return Number(this.nft.price) > 0
   }
 
-  get nftId() {
+  get nftId(): string {
     const { id } = this.nft
     return id
   }
 
-  get detailVisible() {
+  get isTransactionPending(): boolean {
+    return this.pendingTransaction.txPending && this.pendingTransaction.txCaller !== this.accountId
+  }
+
+  get detailVisible(): boolean {
     return !isShareMode
   }
 
-  protected handleAction(deleted: boolean) {
+  protected handleAction(deleted: boolean): void {
     if (deleted) {
       showNotification('INSTANCE REMOVED', notificationTypes.warn)
     }
   }
 
-  protected handleUnlist() {
+  protected handleUnlist(): void {
     // call unlist function from the AvailableActions component
-    ;(this.$refs.actions as AvailableActions).unlistNft()
+    (this.$refs.actions as AvailableActions).unlistNft()
   }
 }
 </script>

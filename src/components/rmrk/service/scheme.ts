@@ -247,3 +247,10 @@ export const mergeNFT = (
     ? sanitizeIpfsUrl(metadata.image || '')
     : metadata.image,
 })
+
+export type PendingTransaction = {
+  id: string
+  txBlock?: number | string
+  txCaller?: string
+  txPending: boolean
+}

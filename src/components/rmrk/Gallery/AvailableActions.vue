@@ -1,13 +1,16 @@
 <template>
   <div>
     <Loader v-model="isLoading" :status="status" />
-    <div v-if="accountId" class="buttons">
+    <div v-if="accountId && !transactionPending" class="buttons">
       <b-button v-for="action in actions" :key="action" :type="iconType(action)[0]"
       outlined
       @click="handleAction(action)">
         {{ action }}
       </b-button>
     </div>
+    <span v-show="transactionPending" class="has-text-success">
+      {{ $t('transaction.peding') }}
+    </span>
     <component class="mb-4" v-if="showMeta" :is="showMeta" @input="updateMeta" emptyOnError />
     <b-button
       v-if="showSubmit"
@@ -62,12 +65,14 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
   @Prop() public price!: string;
   @Prop() public nftId!: string;
   @Prop({ default: () => [] }) public ipfsHashes!: string[];
+  @Prop(Boolean) public transactionPending!: boolean;
+
   private selectedAction: Action = '';
   private meta: string | number = '';
   protected isLoading = false;
   protected status = ''
 
-  get actions() {
+  get actions(): string[] {
     return this.isOwner
       ? ownerActions
       : this.isAvailableToBuy
@@ -75,11 +80,11 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
         : []
   }
 
-  get showSubmit() {
+  get showSubmit(): boolean | string {
     return this.selectedAction && (!this.showMeta || this.metaValid)
   }
 
-  get metaValid() {
+  get metaValid(): boolean | string {
     if (typeof this.meta === 'number') {
       return this.meta >= 0
     }
@@ -87,7 +92,7 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
     return this.meta
   }
 
-  get showMeta() {
+  get showMeta(): string {
     return needMeta[this.selectedAction]
   }
 
