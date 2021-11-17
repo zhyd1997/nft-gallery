@@ -22,5 +22,6 @@ query nftListByIssuer(
     nodes {
       ...nft
     }
+    __typename
   }
 }
