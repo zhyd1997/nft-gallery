@@ -93,9 +93,6 @@ Vue.filter('toSanitizedUrl', toSanitizedUrl)
 Vue.use(VueClipboard)
 
 const apolloProvider = new VueApollo({
-  clients: {
-    rmrkApolloClient
-  },
   defaultClient: apolloClient,
 })
 

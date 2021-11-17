@@ -6,4 +6,5 @@ fragment collection on CollectionEntity {
   currentOwner
   blockNumber
   max
+  __typename
 }

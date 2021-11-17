@@ -8,8 +8,8 @@
         {{ action }}
       </b-button>
     </div>
-    <span v-show="transactionPending" class="has-text-success">
-      {{ $t('transaction.peding') }}
+    <span v-show="transactionPending" class="has-text-success is-size-6">
+      {{ $t('action.transactionPending') }}
     </span>
     <component class="mb-4" v-if="showMeta" :is="showMeta" @input="updateMeta" emptyOnError />
     <b-button
@@ -195,6 +195,9 @@ export default class AvailableActions extends Mixins(RmrkVersionMixin) {
 
       if (isBuy) {
         await this.checkBuyBeforeSubmit()
+        if (this.transactionPending) {
+          throw new Error('Transaction is pending')
+        }
       }
 
       const tx = await exec(this.accountId, '', cb, [arg], txCb(
